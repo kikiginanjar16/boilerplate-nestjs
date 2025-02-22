@@ -15,10 +15,10 @@ const fingerprint = Fingerprint({
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('Jasa Tetangga API')
-    .setDescription('Aplikasi yang memungkinkan warga untuk berbagi informasi dan berita lokal di sekitar mereka. Fitur-fitur seperti forum diskusi, pengumpulan iuran, pengaturan kegiatan sosial, dan pembagian pengumuman menjadikan aplikasi ini berguna untuk interaksi sosial antarwarga.')
+    .setTitle('Backend API')
+    .setDescription('Backend API Documentation')
     .setVersion('1.0')
-    .addTag('Jasa-Tetangga')
+    .addTag('backend-api')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
