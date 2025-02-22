@@ -1,7 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "boilerplate-nestjs",
   "version": "1.0.0",
   "description": "Nest TypeScript starter repository",
+  "author": "Kiki Ginanjar",
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
