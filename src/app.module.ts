@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { PublicModule } from './modules/public/public.module';
-import { BlogModule } from './modules/blogs/blog.module';
 import { CategoryModule } from './modules/categories/category.module';
 import { MenuModule } from './modules/menus/menu.module';
 import { NotificationModule } from './modules/notifications/notification.module';
@@ -25,7 +24,6 @@ import { ProfileModule } from './modules/profiles/profile.module';
     }),
     UsersModule,
     PublicModule,
-    BlogModule,
     CategoryModule,
     MenuModule,
     NotificationModule,
