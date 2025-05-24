@@ -4,11 +4,19 @@ import { IsString, IsOptional } from 'class-validator';
 export class RoleDto {
     @IsString()
     @IsOptional()
-    @ApiProperty()
-    title: string;
+    @ApiProperty({
+        description: 'The title of the role',
+        example: 'Administrator',
+        nullable: true,
+    })
+    public title?: string;
 
-    @IsOptional()
     @IsString()
-    @ApiProperty()
-    description?: string;
+    @IsOptional()
+    @ApiProperty({
+        description: 'The description of the role',
+        example: 'This role is responsible for managing user permissions.',
+        nullable: true,
+    })
+    public description?: string;
 }

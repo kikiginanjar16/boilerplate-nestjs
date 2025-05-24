@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleUseCase } from './usecases/role.usecase';
 import MessageHandler from 'src/common/message';
@@ -16,12 +17,19 @@ import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 import { RoleDto } from './dto/form.dto';
+import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
+import { Roles } from 'src/guards/roles.decorator';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'roles' })
 export class RoleController {
   constructor(private readonly roleUseCase: RoleUseCase) { }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
   async create(@Res() res, @Body() createRoleDto: RoleDto): Promise<Role> {
     try {
       const data = await this.roleUseCase.create(createRoleDto);
@@ -36,6 +44,8 @@ export class RoleController {
   }
 
   @Put(":id")
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: RoleDto): Promise<any> {
     try {
       const data = await this.roleUseCase.update(id, body);
@@ -50,6 +60,8 @@ export class RoleController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
@@ -65,6 +77,8 @@ export class RoleController {
   }
 
   @Get(':id')
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<Role> {
     try {
       const data = await this.roleUseCase.findOne(id);
@@ -79,6 +93,8 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
       const data = await this.roleUseCase.remove(id);

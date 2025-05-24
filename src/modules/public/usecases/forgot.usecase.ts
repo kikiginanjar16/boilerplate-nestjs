@@ -13,10 +13,10 @@ export class ForgotUseCase {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async doForgotPassword(phoneNumber: string): Promise<any> {
+    async doForgotPassword(email: string): Promise<any> {
         try {
             const generatedPassword = Math.random().toString(36).slice(-8);
-            const user = await this.userRepository.findOne({ where: { phone: phoneNumber } });
+            const user = await this.userRepository.findOne({ where: { email: email } });
             if (!user) {
                 throw new Error(MessageHandler.ERR005);
             }
@@ -26,7 +26,7 @@ export class ForgotUseCase {
 
             await this.userRepository.save(user);
             const message = `Silahkan login dengan menggunakan password tersebut ${generatedPassword}, jangan lupa untuk segera menggantinya.`;
-            await new SaungwaApiNotification().sendWhatsAppNotification(phoneNumber, message);
+            await new SaungwaApiNotification().sendWhatsAppNotification(user.phone, message);
             return MessageHandler.SUC005;
         } catch (error) {
             console.error('Error sending password to WhatsApp:', error);

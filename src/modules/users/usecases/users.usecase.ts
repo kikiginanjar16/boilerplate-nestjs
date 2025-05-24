@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import MessageHandler from 'src/common/message';
 import { UserDto } from '../dto/form.dto';
 import Constant from 'src/common/constant';
 import { Common } from 'src/libraries/common';
+import { LoggedDto } from 'src/common/dtos/logged.dto';
+import { createAuditFields, deleteAuditFields, updateAuditFields } from 'src/common/utils/audit.util';
+import { encryptText, hashText } from 'pii-cyclops';
 
 @Injectable()
 export class UserUseCase {
@@ -14,17 +17,41 @@ export class UserUseCase {
     private readonly repository: Repository<User>,
   ) {}
 
-  async create(createUserDto: UserDto): Promise<User> {
-    createUserDto.avatar = Constant.DEFAULT_AVATAR;
-    createUserDto.password = await new Common().hashPassword(createUserDto.password);
-    return this.repository.save(createUserDto);
+  async create(createUserDto: UserDto, logged: LoggedDto): Promise<User> {
+    const name = createUserDto.name;
+    const email = encryptText(createUserDto.email, Constant.JWT_SECRET).encrypted;
+    const phone = encryptText(createUserDto.phone, Constant.JWT_SECRET).encrypted;
+    const address = encryptText(createUserDto.address, Constant.JWT_SECRET).encrypted;
+
+    const user = new User();
+    user.name = name;
+    user.email = email;
+    user.phone = phone;
+    user.address = address;
+    user.avatar = Constant.DEFAULT_AVATAR;
+    user.password = await new Common().hashPassword(createUserDto.password);
+    createAuditFields(user, logged);
+    return this.repository.save(user);
   }
 
-  async paginate(page: number = 1, limit: number = 10): Promise<any> {
+  async paginate(page: number = 1, limit: number = 10, search = ''): Promise<any> {
+    let whereCondition = {};
+    if (search) {
+      whereCondition = {
+        name: Like(`%${search}%`),
+      };
+    }
+
     const [result, total] = await this.repository.findAndCount({
+      where: whereCondition,
       skip: (page - 1) * limit,
       take: limit,
     });
+
+    for (let index = 0; index < result.length; index++) {
+      const item = result[index];
+      delete item.password;
+    }
 
     return {
       data: result,
@@ -36,12 +63,33 @@ export class UserUseCase {
     };
   }
 
-  async update(id : string, body: any): Promise<any> {
+  async update(id : string, body: any, logged: LoggedDto): Promise<any> {
     const data = await this.repository.findOneBy({ id: id });
     if (!data) {
       throw new Error(MessageHandler.ERR005);
     }
 
+    if(body.email){
+      const email = body.email;
+      const email_encrypted = encryptText(email, Constant.JWT_SECRET).encrypted;
+      const email_hash = hashText(email);
+      body.email = email_encrypted;
+      body.email_hash = email_hash;
+    }
+
+    if(body.phone){
+      const phone = body.phone;
+      const phone_encrypted  = encryptText(phone, Constant.JWT_SECRET).encrypted;
+      body.phone = phone_encrypted;
+    }
+
+    if(body.address){
+      const address = body.address;
+      const address_encrypted = encryptText(address, Constant.JWT_SECRET).encrypted;
+      body.address = address_encrypted;
+    }
+
+    updateAuditFields(body, logged);
     const updated = {
       ...data,
       ...body,
@@ -55,10 +103,17 @@ export class UserUseCase {
   }
 
   async findOne(id: string): Promise<User> {
-    return this.repository.findOneBy({ id: id });
+    const data = await this.repository.findOneBy({ id: id });
+    if (!data) {
+      throw new Error(MessageHandler.ERR005);
+    }
+
+    delete data.password;
+    return data;
   }
   
-  async remove(id: string): Promise<void> {
-    await this.repository.delete(id);
+  async remove(id: string, logged: LoggedDto): Promise<void> {
+    const deleted : any = deleteAuditFields(logged);
+    await this.repository.update(id, deleted);
   }
 }

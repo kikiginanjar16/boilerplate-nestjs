@@ -1,6 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { OneToMany } from 'typeorm';
 
 @Entity('users')
 @Index(['name', 'email', 'phone'])
@@ -31,7 +30,7 @@ export class User extends BaseEntity {
     enum: ['user', 'admin'],
     default: 'user',
   })
-  public type: string;
+  public role: string;
 
   @Column({ type: 'json', nullable: true })
   public fingerprint: any;

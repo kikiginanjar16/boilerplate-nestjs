@@ -19,7 +19,7 @@ export class ForgotController {
     @Post()
     async forgot(@Res() res, @Body() body: ForgotDto): Promise<any> {
         try {
-            const data = await this.forgotUseCase.doForgotPassword(body.phone);
+            const data = await this.forgotUseCase.doForgotPassword(body.email);
             return respond(res, 200, true, MessageHandler.SUC006, data);
         } catch (error) {
             logger.error('[LOGIN] ERROR', error);

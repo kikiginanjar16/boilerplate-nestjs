@@ -4,21 +4,38 @@ import { IsString, IsEnum, IsOptional } from 'class-validator';
 export class MenuDto {
     @IsString()
     @IsOptional()
-    @ApiProperty()
-    title: string;
+    @ApiProperty({
+        description: 'The title of the menu item',
+        example: 'Dashboard',
+        nullable: true,
+    })
+    public title?: string;
 
     @IsString()
     @IsOptional()
-    @ApiProperty()
-    icon: string;
+    @ApiProperty({
+        description: 'The icon associated with the menu item',
+        example: 'fa-home',
+        nullable: true,
+    })
+    public icon?: string;
 
     @IsString()
     @IsOptional()
-    @ApiProperty()
-    url: string;
+    @ApiProperty({
+        description: 'The URL linked to the menu item',
+        example: '/dashboard',
+        nullable: true,
+    })
+    public url?: string;
 
     @IsEnum(['active', 'inactive'])
     @IsOptional()
-    @ApiProperty()
-    status: string;
+    @ApiProperty({
+        description: 'The status of the menu item',
+        enum: ['active', 'inactive'],
+        example: 'active',
+        nullable: true,
+    })
+    public status?: string;
 }

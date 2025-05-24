@@ -17,8 +17,8 @@ export class LoginUseCase {
     
     async doLoginAdmin(req : any, body: any): Promise<any> {
         try {
-            const { phone, password } = body;
-            const user = await this.userRepository.findOne({ where: { phone: phone, type: ADMIN } });
+            const { username, password } = body;
+            const user = await this.userRepository.findOne({ where: { email: username, role: ADMIN } });
             if (!user) {
                 throw new Error(MessageHandler.ERR001);
             }
@@ -38,8 +38,8 @@ export class LoginUseCase {
 
     async doLogin(req : any, body: any): Promise<any> {
         try {
-            const { phone, password } = body;
-            const user = await this.userRepository.findOne({ where: { phone: phone} });
+            const { username, password } = body;
+            const user = await this.userRepository.findOne({ where: { email: username} });
             if (!user) {
                 throw new Error(MessageHandler.ERR001);
             }
@@ -50,9 +50,9 @@ export class LoginUseCase {
             }
 
             await this.userRepository.update(user.id, { fingerprint: req.fingerprint.hash });
-            const payload = { id: user.id, phone: user.phone, name: user.name };
+            const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role };
             const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
-            return { fingerprint: true, payload, token };
+            return { fingerprint: true, user:{id: user.id, name: user.name}, token };
         }catch (error) {
             throw error;
         }
