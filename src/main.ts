@@ -1,3 +1,4 @@
+import { RapidocModule } from "@b8n/nestjs-rapidoc";
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -5,7 +6,7 @@ import Constant from './common/constant';
 import JwtValidate from './middlewares/auth.middleware';
 import helmet from 'helmet';
 import * as expressBasicAuth from 'express-basic-auth';
-import { SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
+import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
 
 const Fingerprint = require('express-fingerprint');
 const fingerprint = Fingerprint({
@@ -26,15 +27,30 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('Backend API')
-    .setDescription('Backend API Documentation')
-    .setVersion('1.0')
-    .addTag('backend-api')
+ const config = new DocumentBuilder()
+    .setTitle("BE API Documentation")
+    .setDescription("API Description for BE")
+    .setVersion("1.0")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "Authorization",
+        in: "header",
+      },
+      `${JWT_ACCESS_TOKEN}`,
+    )
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory)
+  RapidocModule.setup("docs", app, documentFactory, {
+    rapidocOptions: {
+      persistAuth: true,
+    },
+  });
+
+
   app.enableCors();
   app.enableVersioning();
   app.use(JwtValidate);

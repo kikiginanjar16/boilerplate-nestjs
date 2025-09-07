@@ -20,6 +20,7 @@
     "test:e2e": "echo 'No e2e tests implemented yet.'"
   },
   "dependencies": {
+    "@b8n/nestjs-rapidoc": "^1.0.9",
     "@nestjs/common": "10.4.6",
     "@nestjs/core": "10.4.6",
     "@nestjs/platform-express": "10.3.8",
