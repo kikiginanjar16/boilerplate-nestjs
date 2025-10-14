@@ -53,7 +53,7 @@ export class NotificationController {
     try {
       const { page, limit } = query;
       const data: any = await this.notificationUseCase.paginate(page, limit);
-      return respond(res,200, true, MessageHandler.SUC000, data.data, data.meta);
+      return respond(res,200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Notification] ERROR', error);
       if (error.message) {

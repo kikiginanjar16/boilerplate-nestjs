@@ -21,6 +21,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { ILike } from 'typeorm';
 
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
@@ -67,8 +68,14 @@ export class UsersController {
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
-      const { page, limit } = query;
-      const data: any = await this.userUseCase.paginate(page, limit);
+      const { page, limit, search } = query;
+      const whereCondition = {};
+      if (search) {
+        Object.assign(whereCondition, {
+          name: ILike(`%${search}%`),
+        });
+      }
+      const data: any = await this.userUseCase.paginate(page, limit, whereCondition);
       return respond(res, 200, true, MessageHandler.SUC000, data.data, data.meta);
     } catch (error) {
       logger.error('[USER] ERROR', error);

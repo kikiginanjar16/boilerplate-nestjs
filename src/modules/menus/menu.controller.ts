@@ -65,7 +65,7 @@ export class MenuController {
     try {
       const { page, limit } = query;
       const data: any = await this.menuUseCase.paginate(page, limit);
-      return respond(res, 200, true, MessageHandler.SUC000, data.data, data.meta);
+      return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Menu] ERROR', error);
       if (error.message) {

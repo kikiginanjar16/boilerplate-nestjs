@@ -66,7 +66,7 @@ export class RoleController {
     try {
       const { page, limit } = query;
       const data: any = await this.roleUseCase.paginate(page, limit);
-      return respond(res, 200, true, MessageHandler.SUC000, data.data, data.meta);
+      return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Role] ERROR', error);
       if (error.message) {

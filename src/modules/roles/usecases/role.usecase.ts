@@ -15,7 +15,7 @@ export class RoleUseCase {
     return this.repository.save(body);
   }
 
-  async paginate(page: number = 1, limit: number = 10): Promise<any> {
+  async paginate(page: number, limit: number): Promise<any> {
     const [result, total] = await this.repository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
@@ -23,11 +23,9 @@ export class RoleUseCase {
 
     return {
       data: result,
-      meta : {
-        count: total,
-        page: page,
-        total_page: Math.ceil(total / limit),
-      }
+      count: total,
+      page: page,
+      total_page: Math.ceil(total / limit),
     };
   }
 

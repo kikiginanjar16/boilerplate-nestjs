@@ -34,14 +34,7 @@ export class UserUseCase {
     return this.repository.save(user);
   }
 
-  async paginate(page: number = 1, limit: number = 10, search = ''): Promise<any> {
-    let whereCondition = {};
-    if (search) {
-      whereCondition = {
-        name: Like(`%${search}%`),
-      };
-    }
-
+  async paginate(page: number, limit: number, whereCondition : any): Promise<any> {
     const [result, total] = await this.repository.findAndCount({
       where: whereCondition,
       skip: (page - 1) * limit,
@@ -55,11 +48,9 @@ export class UserUseCase {
 
     return {
       data: result,
-      meta : {
-        count: total,
-        page: page,
-        total_page: Math.ceil(total / limit),
-      }
+      count: total,
+      page: page,
+      total_page: Math.ceil(total / limit),
     };
   }
 
