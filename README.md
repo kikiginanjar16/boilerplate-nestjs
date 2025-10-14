@@ -1,127 +1,127 @@
 # Boilerplate NestJS
 
-Welcome to the Boilerplate NestJS repository! This project provides a solid foundation for building scalable and maintainable applications using the NestJS framework.
+Production-ready NestJS starter focused on modular architecture, PostgreSQL + TypeORM persistence, and security-minded defaults. Use it as a foundation for REST APIs that need authentication, role-based access, encrypted PII, file storage, and rich domain modules out of the box.
 
-## Table of Contents
+## Highlights
+- **Domain-driven modules**: Users, Roles, Permissions, Categories, Menus, Notifications, Profiles, and Public flows (register/login) are already wired with controllers, services, and use-cases.
+- **Battle-tested security**: JWT authentication, fingerprint binding, bcrypt password hashing, Helmet hardening, CORS, API versioning, and Rapidoc docs behind basic auth.
+- **Data protection**: PII fields (email, phone, address) are encrypted via `pii-cyclops`, with audit-friendly base entities providing `created_by`, `updated_by`, and soft-delete metadata.
+- **TypeORM + PostgreSQL**: Auto-discovered entities, sensible defaults, and `BaseEntity` inheritance for consistent persistence layers.
+- **Observability & tooling**: Jest unit tests, ESLint, Prettier, rimraf cleanup, and deploy helpers for Dockerized environments.
 
-- Features
-- Installation
-- Usage
-- Folder Structure
-- Configuration
-- Testing
-- Contributing
-- License
+## Prerequisites
+- Node.js ≥ 18 and npm ≥ 9 (or Yarn if preferred).
+- PostgreSQL database (defaults to port `5432`).
+- Optional: MinIO server for object storage integration.
+- Optional: Docker engine if you intend to use `deploy.sh`.
 
-## Features
-
-- **Modular Architecture**: Organized code structure for better maintainability.
-- **TypeScript Support**: Built with TypeScript for type safety and better development experience.
-- **Database Integration**: Easily connect to various databases using TypeORM.
-- **Authentication**: Basic setup for JWT authentication.
-- **Environment Configuration**: Manage environment variables with ease.
-- **Testing Framework**: Pre-configured testing setup using Jest.
-
-## Installation
-
-To get started with the Boilerplate NestJS, follow these steps:
-
+## Quick Start
 1. Clone the repository:
-
    ```bash
    git clone https://github.com/kikiginanjar16/boilerplate-nestjs.git
-   ```
-
-2. Navigate to the project directory:
-
-   ```bash
    cd boilerplate-nestjs
    ```
-
-3. Install the dependencies:
-
+2. Install dependencies:
    ```bash
    npm install
    ```
+3. Create an environment file:
+   ```bash
+   cp .env.example .env
+   ```
+4. Update `.env` with your database, MinIO, JWT, and documentation credentials.
+5. Start the development server (defaults to `PORT` in `.env`, fallback `3000`):
+   ```bash
+   npm run start:dev
+   ```
+6. Visit `http://localhost:<PORT>/docs` for interactive API docs (credentials required—see `SWAGGER_USER`/`SWAGGER_PASSWORD`).
 
-4. Set up your environment variables by creating a `.env` file based on the `.env.example` provided.
+## Environment Variables
+| Variable | Description | Default |
+| --- | --- | --- |
+| `NODE_ENV` | Runtime environment flag | `development` |
+| `PORT` | HTTP port for NestJS application | `3000` |
+| `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | PostgreSQL connection settings | `localhost`, `5432`, `user`, `password`, `database` |
+| `JWT_SECRET` | Secret for signing access tokens and encrypting PII | `secret` |
+| `MINIO_ENDPOINT`, `MINIO_PORT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET` | MinIO object storage configuration | `http://localhost:9000`, `9000`, `minio`, `minio123`, `tetangga` |
+| `SAUNGWA_API_KEY` | External integration key (example placeholder) | `key` |
+| `SWAGGER_USER`, `SWAGGER_PASSWORD` | Basic auth credentials to access `/docs` | – |
 
-## Usage
+> Tip: `JWT_SECRET` is shared between token signing and `pii-cyclops` encryption—keep it safe and rotate if needed.
 
-To run the application in development mode, use the following command:
-
-```bash
-npm run start:dev
-```
-
-This will start the server and watch for changes in your files.
-
-## Folder Structure
-
-The project follows a modular structure. Here’s a brief overview of the folder structure:
-
+## Project Layout
 ```
 src/
-├── app.module.ts         # Main application module
-├── main.ts               # Entry point of the application
-├── modules/              # Feature modules
-│   ├── auth/             # Authentication module
-│   ├── users/            # Users module
-│   └── ...               # Other feature modules
-├── common/               # Common utilities and decorators
-└── config/               # Configuration files
+├── app.module.ts            # Connects modules and configures TypeORM
+├── main.ts                  # Bootstrap with security middlewares and Rapidoc
+├── common/                  # Constants, messages, utilities
+├── entities/                # TypeORM entities extending BaseEntity
+├── libraries/common/        # Reusable DTOs and helpers
+├── middlewares/             # JWT validation middleware
+└── modules/
+    ├── public/              # Registration & login flows
+    ├── users/               # User CRUD & profile management
+    ├── roles/, permissions/ # RBAC management endpoints
+    ├── categories/, menus/  # Domain catalog examples
+    ├── notifications/       # Notification persistence + pagination
+    └── profiles/            # User profile operations
 ```
 
-## Configuration
+Each module follows a layered approach:
+* **Controller**: Request/response mapping and routing.
+* **Use case**: Encapsulated domain logic.
+* **Repository/Entity**: Persistence via TypeORM repositories.
 
-The application uses environment variables for configuration. You can define your variables in the `.env` file. Here are some common variables you might need to set:
+## Development Workflow
+- Start development server: `npm run start:dev`
+- Build for production: `npm run build` (output to `dist`)
+- Start compiled build: `npm run start:prod`
+- Run linting: `npm run lint`
+- Auto-format: `npm run format`
+- Run unit tests once / watch / coverage:
+  ```bash
+  npm run test
+  npm run test:watch
+  npm run test:cov
+  ```
+- Debug tests with inspector: `npm run test:debug`
+- (Placeholder) e2e command: `npm run test:e2e`
 
-```
-DATABASE_URL=your_database_url
-JWT_SECRET=your_jwt_secret
-PORT=3000
-```
+## API Documentation
+- Rapidoc served at `/docs` with credentials from `SWAGGER_USER` and `SWAGGER_PASSWORD`.
+- JWT bearer scheme (`x-access-token`) preconfigured in the doc to test protected endpoints.
+- Adjust metadata (`title`, `description`, version) inside `src/main.ts` if needed.
 
-## Testing
+## Database & Data Integrity
+- PostgreSQL connection configured in `AppModule` with auto entity loading and schema synchronization enabled by default.
+- Shared `BaseEntity` adds UUID primary keys, timestamps, and auditing columns.
+- Passwords hashed with `bcrypt` and PII (email, phone, address) encrypted using `pii-cyclops` before persistence.
 
-To run the tests, use the following command:
+## Security Defaults
+- Helmet middleware for HTTP header hardening.
+- CORS enabled for cross-origin clients—customize as required.
+- Global JWT middleware (`JwtValidate`) to protect downstream handlers.
+- Fingerprint middleware binds sessions to user fingerprints for replay mitigation.
 
-```bash
-npm run test
-```
+## Docker Deployment
+- `deploy.sh` builds and runs the application as a Docker container:
+  ```bash
+  ./deploy.sh
+  ```
+  Update `IMAGE_NAME`, `CONTAINER_NAME`, and `PORT_MAPPING` to suit your environment.
+- Ensure your `.env` values are supplied to the container (e.g., via Docker secrets or environment file).
 
-This will execute the tests using Jest. You can also run tests in watch mode with:
-
-```bash
-npm run test:watch
-```
+## Troubleshooting
+- **Cannot access `/docs`**: Confirm `SWAGGER_USER`/`SWAGGER_PASSWORD` are set and restart the server.
+- **Database connection errors**: Verify PostgreSQL credentials and that the database is reachable from the running container/service.
+- **Encrypted fields look unreadable**: Use application services to decrypt—plaintext is intentionally not stored.
 
 ## Contributing
-
-Contributions are welcome! If you have suggestions for improvements or want to report a bug, please open an issue or submit a pull request.
-
 1. Fork the repository.
-2. Create your feature branch:
-
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-3. Commit your changes:
-
-   ```bash
-   git commit -m 'Add some feature'
-   ```
-4. Push to the branch:
-
-   ```bash
-   git push origin feature/YourFeature
-   ```
-5. Open a pull request.
+2. Create a feature branch: `git checkout -b feature/your-feature`.
+3. Commit changes with context.
+4. Push to your fork and open a pull request describing the update.
+5. Include tests or updates to documentation where applicable.
 
 ## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
----
-
-Feel free to explore the repository and start building your next NestJS application! If you have any questions, don't hesitate to reach out. Happy coding!
+MIT © Kiki Ginanjar
