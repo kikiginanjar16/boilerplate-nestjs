@@ -8,6 +8,7 @@ Production-ready NestJS starter focused on modular architecture, PostgreSQL + Ty
 - **Data protection**: PII fields (email, phone, address) are encrypted via `pii-cyclops`, with audit-friendly base entities providing `created_by`, `updated_by`, and soft-delete metadata.
 - **TypeORM + PostgreSQL**: Auto-discovered entities, sensible defaults, and `BaseEntity` inheritance for consistent persistence layers.
 - **Observability & tooling**: Jest unit tests, ESLint, Prettier, rimraf cleanup, and deploy helpers for Dockerized environments.
+- **CLI scaffolding**: Pair with [crud-generator-nestjs](https://github.com/kikiginanjar16/crud-generator-nestjs) to bootstrap new CRUD modules that follow the same conventions.
 
 ## Prerequisites
 - Node.js ≥ 18 and npm ≥ 9 (or Yarn if preferred).
@@ -86,6 +87,17 @@ Each module follows a layered approach:
   ```
 - Debug tests with inspector: `npm run test:debug`
 - (Placeholder) e2e command: `npm run test:e2e`
+
+## CRUD Generator Scaffolding
+- **Install**: Add the CLI globally (`npm install -g crud-generator-nestjs`) or as a dev dependency (`npm install -D crud-generator-nestjs`). Using `npx crud-generator-nestjs` works too.
+- **Describe your model**: Create a JSON file (e.g., `tools/generators/todo.json`) that lists the entity name, pluralized route, primary key type, and fields with metadata.
+- **Generate resources**:
+  ```bash
+  crud-generator-nestjs tools/generators/todo.json --output src/modules
+  ```
+  Replace the output path or additional flags as needed—the generator creates NestJS entities, DTOs, modules, controllers, and use cases aligned with this project's layering.
+- **Refine**: Wire generated files into `AppModule`, adjust relationships, add business logic, and update tests/documentation. Sensitive fields should continue to use the encryption utilities provided in `src/common`.
+- Refer to the tool's repository for advanced options and examples: [github.com/kikiginanjar16/crud-generator-nestjs](https://github.com/kikiginanjar16/crud-generator-nestjs).
 
 ## API Documentation
 - Rapidoc served at `/docs` with credentials from `SWAGGER_USER` and `SWAGGER_PASSWORD`.
