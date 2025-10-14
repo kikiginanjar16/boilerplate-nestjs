@@ -15,8 +15,11 @@ import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 import { NotificationDto } from './dto/form.dto';
+import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 
 @Controller({ version: '1', path: 'notifications'})
+@ApiBearerAuth(JWT_ACCESS_TOKEN)
 export class NotificationController {
   constructor(private readonly notificationUseCase: NotificationUseCase) {}
 
@@ -49,6 +52,7 @@ export class NotificationController {
   }
 
   @Get()
+  @ApiProperty({ type: () => PaginateDto })
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;

@@ -15,7 +15,7 @@ export class NotificationUseCase {
     return this.repository.save(body);
   }
 
-  async paginate(page: number, limit: number): Promise<any> {
+  async paginate(page = 1, limit = 10): Promise<any> {
     const [result, total] = await this.repository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

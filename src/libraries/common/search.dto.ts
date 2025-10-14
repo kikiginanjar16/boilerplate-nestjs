@@ -3,20 +3,32 @@ import { IsNumber, IsOptional } from "class-validator";
 
 export class PaginateDto {
     @IsNumber()
-    @ApiProperty()
+    @ApiProperty({
+        example: 10,
+        description: 'Limit per page',
+    })
     limit: number;
 
 
     @IsNumber()
-    @ApiProperty()
+    @ApiProperty({
+        example: 1,
+        description: 'Page number',
+    })
     page: number;
 
 
     @IsOptional()
-    @ApiProperty()
+    @ApiProperty({
+        example:'',
+        description: 'Search term',
+    })
     search: string;
 
     @IsOptional()
-    @ApiProperty()
+    @ApiProperty({
+        example: '',
+        description: 'Notification status',
+    })
     status: string;
 }

@@ -17,7 +17,7 @@ import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 import { UserDto } from './dto/form.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -64,6 +64,7 @@ export class UsersController {
   }
 
   @Get()
+  @ApiProperty({ type: () => PaginateDto })
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {

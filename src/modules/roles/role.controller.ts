@@ -20,7 +20,7 @@ import { RoleDto } from './dto/form.dto';
 import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'roles' })
@@ -60,6 +60,7 @@ export class RoleController {
   }
 
   @Get()
+  @ApiProperty({ type: () => PaginateDto })
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
