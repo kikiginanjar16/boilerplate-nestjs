@@ -32,8 +32,8 @@ export class RoleController {
   @Roles(ADMIN)
   async create(@Res() res, @Body() createRoleDto: RoleDto): Promise<Role> {
     try {
-      const data = await this.roleUseCase.create(createRoleDto);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      const data : any = await this.roleUseCase.create(createRoleDto);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Role] ERROR', error);
       if (error.message) {

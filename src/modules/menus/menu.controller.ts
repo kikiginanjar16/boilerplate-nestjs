@@ -31,8 +31,8 @@ export class MenuController {
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: MenuDto): Promise<any> {
     try {
-      const data = await this.menuUseCase.create(body);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      const data : any = await this.menuUseCase.create(body);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Menu] ERROR', error);
       if (error.message) {

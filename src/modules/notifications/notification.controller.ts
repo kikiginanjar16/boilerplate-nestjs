@@ -26,8 +26,8 @@ export class NotificationController {
   @Post()
   async create(@Res() res, @Body() body: NotificationDto): Promise<any> {
     try {
-      const data = await this.notificationUseCase.create(body);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      const data : any = await this.notificationUseCase.create(body);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Notification] ERROR', error);
       if (error.message) {

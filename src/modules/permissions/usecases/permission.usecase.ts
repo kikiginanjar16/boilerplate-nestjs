@@ -23,9 +23,11 @@ export class PermissionUseCase {
 
     return {
       data: result,
-      count: total,
-      page: page,
-      total_page: Math.ceil(total / limit),
+      meta: {
+        count: total,
+        page: page,
+        total_page: Math.ceil(total / limit),
+      }
     };
   }
 

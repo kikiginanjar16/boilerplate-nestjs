@@ -32,7 +32,7 @@ export class CategoryController {
   async create(@Res() res, @Body() body: CategoryDto): Promise<any> {
     try {
       const data = await this.categoryUseCase.create(body);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Category] ERROR', error);
       if (error.message) {

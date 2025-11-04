@@ -35,8 +35,8 @@ export class UsersController {
   async create(@Res() res, @Body() createUserDto: UserDto): Promise<User> {
     try {
       const logged = res.locals.logged;
-      const data = await this.userUseCase.create(createUserDto, logged);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      const data : any = await this.userUseCase.create(createUserDto, logged);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[USER] ERROR', error);
       if (error.message) {

@@ -31,8 +31,8 @@ export class PermissionController {
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: PermissionDto): Promise<any> {
     try {
-      const data = await this.permissionUseCase.create(body);
-      return respond(res, 201, true, MessageHandler.SUC001, data);
+      const data : any = await this.permissionUseCase.create(body);
+      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
       if (error.message) {
