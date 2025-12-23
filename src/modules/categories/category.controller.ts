@@ -10,7 +10,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { CategoryUseCase } from './usecases/category.usecase';
 import MessageHandler from 'src/common/message';
 import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
@@ -20,19 +19,29 @@ import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { JWT_ACCESS_TOKEN, ADMIN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { CreateCategoryUseCase } from './usecases/create-category.usecase';
+import { GetCategoryUseCase } from './usecases/get-category.usecase';
+import { UpdateCategoryUseCase } from './usecases/update-category.usecase';
+import { DeleteCategoryUseCase } from './usecases/delete-category.usecase';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'categories' })
 export class CategoryController {
-  constructor(private readonly categoryUseCase: CategoryUseCase) { }
+  constructor(
+    private readonly createCategoryUseCase: CreateCategoryUseCase,
+    private readonly getCategoryUseCase: GetCategoryUseCase,
+    private readonly updateCategoryUseCase: UpdateCategoryUseCase,
+    private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
+  ) { }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: CategoryDto): Promise<any> {
     try {
-      const data = await this.categoryUseCase.create(body);
-      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
+      const logged = res.locals.logged;
+      const data = await this.createCategoryUseCase.execute(body, logged);
+      return respond(res, 201, true, MessageHandler.SUC001, data);
     } catch (error) {
       logger.error('[Category] ERROR', error);
       if (error.message) {
@@ -47,7 +56,8 @@ export class CategoryController {
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: CategoryDto): Promise<any> {
     try {
-      const data = await this.categoryUseCase.update(id, body);
+      const logged = res.locals.logged;
+      const data = await this.updateCategoryUseCase.execute(id, body, logged);
       return respond(res, 200, true, MessageHandler.SUC002, data);
     } catch (error) {
       logger.error('[Category] ERROR', error);
@@ -65,7 +75,8 @@ export class CategoryController {
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
-      const data: any = await this.categoryUseCase.paginate(page, limit);
+      const logged = res.locals.logged;
+      const data: any = await this.getCategoryUseCase.paginate(page, limit, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Category] ERROR', error);
@@ -81,7 +92,8 @@ export class CategoryController {
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<any> {
     try {
-      const data = await this.categoryUseCase.findOne(id);
+      const logged = res.locals.logged;
+      const data = await this.getCategoryUseCase.findOne(id, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Category] ERROR', error);
@@ -97,7 +109,8 @@ export class CategoryController {
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
-      const data = await this.categoryUseCase.remove(id);
+      const logged = res.locals.logged;
+      const data = await this.deleteCategoryUseCase.execute(id, logged);
       return respond(res, 200, true, MessageHandler.SUC003, data);
     } catch (error) {
       logger.error('[Category] ERROR', error);

@@ -12,12 +12,14 @@ export default class Constant {
     static readonly JWT_SECRET: string = process.env.JWT_SECRET || 'secret';
     static readonly SALT_ROUNDS: number = 10;
     static readonly DEFAULT_AVATAR : string = 'https://www.shutterstock.com/image-vector/young-smiling-man-avatar-brown-600nw-2261401207.jpg';
-    static readonly MINIO_ENDPOINT: string = process.env.MINIO_ENDPOINT || 'http://localhost:9000';
+    static readonly MINIO_ENDPOINT: string = process.env.MINIO_ENDPOINT || 'localhost';
     static readonly MINIO_PORT: number = parseInt(process.env.MINIO_PORT || '9000', 10);
     static readonly MINIO_ACCESS_KEY: string = process.env.MINIO_ACCESS_KEY || 'minio';
     static readonly MINIO_SECRET_KEY: string = process.env.MINIO_SECRET_KEY || 'minio123';
     static readonly MINIO_BUCKET_PUBLIC: string = process.env.MINIO_BUCKET || 'tetangga';
     static readonly MINIO_BUCKET_PRIVATE: string = process.env.MINIO_BUCKET || 'legal-tetangga';
     static readonly SAUNGWA_API_KEY: string = process.env.SAUNGWA_API_KEY || 'key';
+    static readonly SAUNGWA_APPKEY: string = process.env.SAUNGWA_APPKEY || '';
+    static readonly SAUNGWA_AUTHKEY: string = process.env.SAUNGWA_AUTHKEY || '';
+    static readonly SAUNGWA_BASE_URL: string = process.env.SAUNGWA_BASE_URL || 'https://app.saungwa.com/api';
 }
-

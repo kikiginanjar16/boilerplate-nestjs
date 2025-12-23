@@ -5,6 +5,8 @@ import { SaungwaApiNotification } from 'src/libraries/saungwa';
 import { Repository } from 'typeorm';
 import { Common } from 'src/libraries/common';
 import MessageHandler from 'src/common/message';
+import { decryptText, hashText } from 'pii-cyclops';
+import Constant from 'src/common/constant';
 
 @Injectable()
 export class ForgotUseCase {
@@ -16,17 +18,18 @@ export class ForgotUseCase {
     async doForgotPassword(email: string): Promise<any> {
         try {
             const generatedPassword = Math.random().toString(36).slice(-8);
-            const user = await this.userRepository.findOne({ where: { email: email } });
+            const email_hash = hashText(email);
+            const user = await this.userRepository.findOne({ where: { email_hash } });
             if (!user) {
                 throw new Error(MessageHandler.ERR005);
             }
 
-            user.password = new Common().hashPassword(generatedPassword);
-            console.log('Generated password:', generatedPassword);
+            user.password = await new Common().hashPassword(generatedPassword);
 
             await this.userRepository.save(user);
             const message = `Silahkan login dengan menggunakan password tersebut ${generatedPassword}, jangan lupa untuk segera menggantinya.`;
-            await new SaungwaApiNotification().sendWhatsAppNotification(user.phone, message);
+            const decryptedPhone = decryptText(user.phone, Constant.JWT_SECRET);
+            await new SaungwaApiNotification().sendWhatsAppNotification(decryptedPhone, message);
             return MessageHandler.SUC005;
         } catch (error) {
             console.error('Error sending password to WhatsApp:', error);

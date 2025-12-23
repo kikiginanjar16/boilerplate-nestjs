@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import Constant from './common/constant';
+import { ValidationPipe } from '@nestjs/common';
 import JwtValidate from './middlewares/auth.middleware';
 import helmet from 'helmet';
 import * as expressBasicAuth from 'express-basic-auth';
@@ -19,6 +20,7 @@ const fingerprint = Fingerprint({
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     app.use(`/docs`, expressBasicAuth({
       users: {
         [SWAGGER_USER]: SWAGGER_PASSWORD,

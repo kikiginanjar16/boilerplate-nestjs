@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
-import { UserUseCase } from './usecases/users.usecase';
 import MessageHandler from 'src/common/message';
 import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
@@ -22,12 +21,21 @@ import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { ILike } from 'typeorm';
+import { CreateUserUseCase } from './usecases/create-user.usecase';
+import { UpdateUserUseCase } from './usecases/update-user.usecase';
+import { GetUserUseCase } from './usecases/get-user.usecase';
+import { DeleteUserUseCase } from './usecases/delete-user.usecase';
 
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'users' })
 export class UsersController {
-  constructor(private readonly userUseCase: UserUseCase) { }
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly getUserUseCase: GetUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+  ) { }
 
   @Post()
   @UseGuards(RolesGuard)
@@ -35,7 +43,7 @@ export class UsersController {
   async create(@Res() res, @Body() createUserDto: UserDto): Promise<User> {
     try {
       const logged = res.locals.logged;
-      const data : any = await this.userUseCase.create(createUserDto, logged);
+      const data : any = await this.createUserUseCase.execute(createUserDto, logged);
       return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[USER] ERROR', error);
@@ -52,7 +60,7 @@ export class UsersController {
   async update(@Res() res, @Param('id') id: string, @Body() body: UserDto): Promise<any> {
     try {
       const logged = res.locals.logged;
-      const data = await this.userUseCase.update(id, body, logged);
+      const data = await this.updateUserUseCase.execute(id, body, logged);
       return respond(res, 200, true, MessageHandler.SUC002, data);
     } catch (error) {
       logger.error('[USER] ERROR', error);
@@ -76,7 +84,8 @@ export class UsersController {
           name: ILike(`%${search}%`),
         });
       }
-      const data: any = await this.userUseCase.paginate(page, limit, whereCondition);
+      const logged = res.locals.logged;
+      const data: any = await this.getUserUseCase.paginate(page, limit, whereCondition, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data.data, data.meta);
     } catch (error) {
       logger.error('[USER] ERROR', error);
@@ -92,7 +101,8 @@ export class UsersController {
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<User> {
     try {
-      const data = await this.userUseCase.findOne(id);
+      const logged = res.locals.logged;
+      const data = await this.getUserUseCase.findOne(id, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[USER] ERROR', error);
@@ -109,7 +119,7 @@ export class UsersController {
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
       const logged = res.locals.logged;
-      const data = await this.userUseCase.remove(id, logged);
+      const data = await this.deleteUserUseCase.execute(id, logged);
       return respond(res, 200, true, MessageHandler.SUC003, data);
     } catch (error) {
       logger.error('[USER] ERROR', error);

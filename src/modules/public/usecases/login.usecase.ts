@@ -15,13 +15,22 @@ export class LoginUseCase {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-    ) {}
-    
-    async doLoginAdmin(req : any, body: LoginDto): Promise<any> {
+    ) { }
+
+    async doLoginAdmin(req: any, body: LoginDto): Promise<any> {
         try {
             const { username, password } = body;
             const email_hash = hashText(username);
-            const user = await this.userRepository.findOne({ where: { email_hash, role: ADMIN } });
+            const user = await this.userRepository.findOne({
+                where: { email_hash, role: ADMIN },
+                select: {
+                    id: true,
+                    phone: true,
+                    name: true,
+                    role: true,
+                    password: true,
+                }
+            });
             if (!user) {
                 throw new Error(MessageHandler.ERR001);
             }
@@ -30,7 +39,7 @@ export class LoginUseCase {
             if (!isMatch) {
                 throw new Error(MessageHandler.ERR001);
             }
-            
+
             const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role };
             const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
             return { fingerprint: true, user: { id: user.id, phone: user.phone, name: user.name }, token };
@@ -43,7 +52,17 @@ export class LoginUseCase {
         try {
             const { username, password } = body;
             const email_hash = hashText(username);
-            const user = await this.userRepository.findOne({ where: { email_hash } });
+            const user = await this.userRepository.findOne({
+                where: { email_hash },
+                select: {
+                    id: true,
+                    phone: true,
+                    name: true,
+                    role: true,
+                    password: true,
+                    fingerprint: true,
+                }
+            });
 
             if (!user) {
                 throw new Error(MessageHandler.ERR001);
@@ -55,10 +74,10 @@ export class LoginUseCase {
             }
 
             await this.userRepository.update(user.id, { fingerprint: req.fingerprint.hash });
-            const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role };
+            const payload = { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar };
             const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
-            return { fingerprint: true, user: { id: user.id, name: user.name, phone: user.phone}, token };
-        }catch (error) {
+            return { fingerprint: true, user: { id: user.id, name: user.name, avatar: user.avatar }, token };
+        } catch (error) {
             throw error;
         }
     }

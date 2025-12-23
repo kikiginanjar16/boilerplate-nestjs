@@ -10,7 +10,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { RoleUseCase } from './usecases/role.usecase';
 import MessageHandler from 'src/common/message';
 import { Role } from 'src/entities/role.entity';
 import { PaginateDto } from 'src/libraries/common/search.dto';
@@ -21,18 +20,28 @@ import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { CreateRoleUseCase } from './usecases/create-role.usecase';
+import { GetRoleUseCase } from './usecases/get-role.usecase';
+import { UpdateRoleUseCase } from './usecases/update-role.usecase';
+import { DeleteRoleUseCase } from './usecases/delete-role.usecase';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'roles' })
 export class RoleController {
-  constructor(private readonly roleUseCase: RoleUseCase) { }
+  constructor(
+    private readonly createRoleUseCase: CreateRoleUseCase,
+    private readonly getRoleUseCase: GetRoleUseCase,
+    private readonly updateRoleUseCase: UpdateRoleUseCase,
+    private readonly deleteRoleUseCase: DeleteRoleUseCase,
+  ) { }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() createRoleDto: RoleDto): Promise<Role> {
     try {
-      const data : any = await this.roleUseCase.create(createRoleDto);
+      const logged = res.locals.logged;
+      const data : any = await this.createRoleUseCase.execute(createRoleDto, logged);
       return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Role] ERROR', error);
@@ -48,7 +57,8 @@ export class RoleController {
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: RoleDto): Promise<any> {
     try {
-      const data = await this.roleUseCase.update(id, body);
+      const logged = res.locals.logged;
+      const data = await this.updateRoleUseCase.execute(id, body, logged);
       return respond(res, 200, true, MessageHandler.SUC002, data);
     } catch (error) {
       logger.error('[Role] ERROR', error);
@@ -66,7 +76,8 @@ export class RoleController {
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
-      const data: any = await this.roleUseCase.paginate(page, limit);
+      const logged = res.locals.logged;
+      const data: any = await this.getRoleUseCase.paginate(page, limit, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Role] ERROR', error);
@@ -82,7 +93,8 @@ export class RoleController {
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<Role> {
     try {
-      const data = await this.roleUseCase.findOne(id);
+      const logged = res.locals.logged;
+      const data = await this.getRoleUseCase.findOne(id, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Role] ERROR', error);
@@ -98,7 +110,8 @@ export class RoleController {
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
-      const data = await this.roleUseCase.remove(id);
+      const logged = res.locals.logged;
+      const data = await this.deleteRoleUseCase.execute(id, logged);
       return respond(res, 200, true, MessageHandler.SUC003, data);
     } catch (error) {
       logger.error('[Role] ERROR', error);

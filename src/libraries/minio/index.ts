@@ -4,11 +4,22 @@ import Constant from 'src/common/constant';
 
 class MinioClient {
     private client: Minio.Client;
+    private readonly useSSL: boolean;
+    private readonly host: string;
+    private readonly port: number;
     constructor() {
+        const rawEndpoint = Constant.MINIO_ENDPOINT;
+        const normalizedEndpoint = rawEndpoint.replace(/^https?:\/\//, '');
+        const [hostFromEndpoint, portFromEndpoint] = normalizedEndpoint.split(':');
+
+        this.useSSL = rawEndpoint.startsWith('https');
+        this.host = hostFromEndpoint;
+        this.port = portFromEndpoint ? parseInt(portFromEndpoint, 10) : Constant.MINIO_PORT;
+
         this.client = new Minio.Client({
-            endPoint: Constant.MINIO_ENDPOINT,
-            port: 9000,
-            useSSL: false,
+            endPoint: this.host,
+            port: this.port,
+            useSSL: this.useSSL,
             accessKey: Constant.MINIO_ACCESS_KEY,
             secretKey: Constant.MINIO_SECRET_KEY
         });
@@ -24,7 +35,8 @@ class MinioClient {
             );
 
             Logger.log('File uploaded successfully.');
-            const base_url = `http://${Constant.MINIO_ENDPOINT}:${Constant.MINIO_PORT}`;
+            const protocol = this.useSSL ? 'https' : 'http';
+            const base_url = `${protocol}://${this.host}:${this.port}`;
             return {
                 bucket: Constant.MINIO_BUCKET_PUBLIC,
                 filename: objectName,
@@ -49,7 +61,8 @@ class MinioClient {
             );
 
             Logger.log('File uploaded successfully.');
-            const base_url = `http://${Constant.MINIO_ENDPOINT}:${Constant.MINIO_PORT}`;
+            const protocol = this.useSSL ? 'https' : 'http';
+            const base_url = `${protocol}://${this.host}:${this.port}`;
             return {
                 bucket: Constant.MINIO_BUCKET_PRIVATE,
                 filename: objectName,

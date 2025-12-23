@@ -28,7 +28,9 @@ export class ProfileUseCase {
       updated.password = await new Common().hashPassword(body.password);
     }
 
-    return this.repository.save(updated);
+    const saved = await this.repository.save(updated);
+    delete saved.password;
+    return saved;
   }
 
   async findOne(id: string): Promise<any> {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as FormData from "form-data";
+import Constant from "src/common/constant";
 export class SaungwaApiNotification {
 
     private normalize(phoneNumber: string): string {
@@ -18,11 +19,11 @@ export class SaungwaApiNotification {
         const form = new FormData();
         form.append('to', this.normalize(phoneNumber));
         form.append('message', message);
-        form.append('appkey', "1a588038-650f-4c63-97be-bb3f5312d9f1");
-        form.append('authkey', "aCXiRgGhwetCfn2coxK0Dx4BBvxaDcwRqmkzhfU1cIrSdskOUR");
+        form.append('appkey', Constant.SAUNGWA_APPKEY);
+        form.append('authkey', Constant.SAUNGWA_AUTHKEY);
 
         try {
-            await axios.post(`https://app.saungwa.com/api/create-message`, form);
+            await axios.post(`${Constant.SAUNGWA_BASE_URL}/create-message`, form);
             console.log('WhatsApp notification sent successfully');
         } catch (error) {
             console.error('Failed to send WhatsApp notification', error);

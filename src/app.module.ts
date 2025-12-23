@@ -15,7 +15,7 @@ import { ProfileModule } from './modules/profiles/profile.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: Constant.DB_HOST,
-      port: 5432,
+      port: Constant.DB_PORT,
       username: Constant.DB_USER,
       password: Constant.DB_PASSWORD,
       database: Constant.DB_NAME,

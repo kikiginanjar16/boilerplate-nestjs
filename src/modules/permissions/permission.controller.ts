@@ -10,7 +10,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { PermissionUseCase } from './usecases/permission.usecase';
 import MessageHandler from 'src/common/message';
 import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
@@ -20,18 +19,28 @@ import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { CreatePermissionUseCase } from './usecases/create-permission.usecase';
+import { GetPermissionUseCase } from './usecases/get-permission.usecase';
+import { UpdatePermissionUseCase } from './usecases/update-permission.usecase';
+import { DeletePermissionUseCase } from './usecases/delete-permission.usecase';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'permissions' })
 export class PermissionController {
-  constructor(private readonly permissionUseCase: PermissionUseCase) { }
+  constructor(
+    private readonly createPermissionUseCase: CreatePermissionUseCase,
+    private readonly getPermissionUseCase: GetPermissionUseCase,
+    private readonly updatePermissionUseCase: UpdatePermissionUseCase,
+    private readonly deletePermissionUseCase: DeletePermissionUseCase,
+  ) { }
 
   @Post()
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: PermissionDto): Promise<any> {
     try {
-      const data : any = await this.permissionUseCase.create(body);
+      const logged = res.locals.logged;
+      const data : any = await this.createPermissionUseCase.execute(body, logged);
       return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
@@ -47,7 +56,8 @@ export class PermissionController {
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: PermissionDto): Promise<any> {
     try {
-      const data = await this.permissionUseCase.update(id, body);
+      const logged = res.locals.logged;
+      const data = await this.updatePermissionUseCase.execute(id, body, logged);
       return respond(res, 200, true, MessageHandler.SUC002, data);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
@@ -65,7 +75,8 @@ export class PermissionController {
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
-      const data: any = await this.permissionUseCase.paginate(page, limit);
+      const logged = res.locals.logged;
+      const data: any = await this.getPermissionUseCase.paginate(page, limit, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
@@ -81,7 +92,8 @@ export class PermissionController {
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<any> {
     try {
-      const data = await this.permissionUseCase.findOne(id);
+      const logged = res.locals.logged;
+      const data = await this.getPermissionUseCase.findOne(id, logged);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
@@ -97,7 +109,8 @@ export class PermissionController {
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
-      const data = await this.permissionUseCase.remove(id);
+      const logged = res.locals.logged;
+      const data = await this.deletePermissionUseCase.execute(id, logged);
       return respond(res, 200, true, MessageHandler.SUC003, data);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
