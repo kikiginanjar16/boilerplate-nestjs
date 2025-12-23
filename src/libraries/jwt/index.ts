@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+
 import Constant from 'src/common/constant';
 
 const secretKey = Constant.JWT_SECRET;

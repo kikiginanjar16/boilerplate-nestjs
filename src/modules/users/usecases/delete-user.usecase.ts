@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import { LoggedDto } from 'src/common/dtos/logged.dto';
-import { deleteAuditFields } from 'src/common/utils/audit.util';
-import MessageHandler from 'src/common/message';
+
 import { ADMIN } from 'src/common/constant/constant';
+import { LoggedDto } from 'src/common/dtos/logged.dto';
+import MessageHandler from 'src/common/message';
+import { deleteAuditFields } from 'src/common/utils/audit.util';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class DeleteUserUseCase {

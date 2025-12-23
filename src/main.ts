@@ -1,14 +1,16 @@
 import { RapidocModule } from "@b8n/nestjs-rapidoc";
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import Constant from './common/constant';
 import { ValidationPipe } from '@nestjs/common';
-import JwtValidate from './middlewares/auth.middleware';
-import helmet from 'helmet';
+import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
-import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
+import helmet from 'helmet';
 
+import { AppModule } from './app.module';
+import Constant from './common/constant';
+import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
+import JwtValidate from './middlewares/auth.middleware';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fingerprint = require('express-fingerprint');
 const fingerprint = Fingerprint({
   parameters: [

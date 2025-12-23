@@ -9,17 +9,18 @@ import {
   Put,
   Res,
   UploadedFile,
-  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
-import { ProfileUseCase } from './usecases/profile.usecase';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+
 import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
+
 import { UserDto } from './dto/form.dto';
-import { PersonDto } from './dto/personal.dto';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express/multer';
+import { ProfileUseCase } from './usecases/profile.usecase';
+import { User } from '../../entities/user.entity';
+
 
 @Controller({ version: '1', path: 'profile' })
 export class ProfileController {

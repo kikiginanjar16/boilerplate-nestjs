@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Permission } from 'src/entities/permission.entity';
+
 import { LoggedDto } from 'src/common/dtos/logged.dto';
 import { createAuditFields } from 'src/common/utils/audit.util';
+import { Permission } from 'src/entities/permission.entity';
 
 @Injectable()
 export class CreatePermissionUseCase {

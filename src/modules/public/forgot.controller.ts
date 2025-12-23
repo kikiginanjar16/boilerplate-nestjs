@@ -4,11 +4,13 @@ import {
     Post,
     Res,
 } from '@nestjs/common';
+
+import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
-import MessageHandler from 'src/common/message';
-import { ForgotUseCase } from './usecases/forgot.usecase';
+
 import { ForgotDto } from './dto/forgot.dto';
+import { ForgotUseCase } from './usecases/forgot.usecase';
 
 @Controller({ version: '1', path: 'forgot-password' })
 export class ForgotController {

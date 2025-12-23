@@ -4,11 +4,13 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
+
+import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
-import MessageHandler from 'src/common/message';
-import { RegisterUseCase } from './usecases/register.usecase';
+
 import { RegisterDto } from './dto/register.dto';
+import { RegisterUseCase } from './usecases/register.usecase';
 
 @Controller({ version: '1', path: 'register' })
 export class RegisterController {

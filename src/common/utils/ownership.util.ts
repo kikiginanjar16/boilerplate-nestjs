@@ -1,6 +1,6 @@
 import { ADMIN } from '../constant/constant';
-import MessageHandler from '../message';
 import { LoggedDto } from '../dtos/logged.dto';
+import MessageHandler from '../message';
 
 // Throws if a non-admin tries to access a record they did not create.
 export function assertOwnershipOrAdmin(entity: { created_id?: string }, logged: LoggedDto): void {

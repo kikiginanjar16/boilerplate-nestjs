@@ -1,8 +1,9 @@
 import { Request, NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+
 import Constant from 'src/common/constant';
 import MessageHandler from 'src/common/message';
 import { IResponse } from 'src/libraries/common/request.interface';
-import * as jwt from 'jsonwebtoken';
 
 const JwtValidate = (req: Request, res: IResponse, next: NextFunction) => {
     try {

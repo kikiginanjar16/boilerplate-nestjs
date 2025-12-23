@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import * as Minio from 'minio';
+
 import Constant from 'src/common/constant';
 
 class MinioClient {

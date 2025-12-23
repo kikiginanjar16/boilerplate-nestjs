@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/entities/category.entity';
-import { createAuditFields } from 'src/common/utils/audit.util';
-import { LoggedDto } from 'src/common/dtos/logged.dto';
 import { Repository } from 'typeorm';
+
+import { LoggedDto } from 'src/common/dtos/logged.dto';
+import { createAuditFields } from 'src/common/utils/audit.util';
+import { Category } from 'src/entities/category.entity';
 
 @Injectable()
 export class CreateCategoryUseCase {

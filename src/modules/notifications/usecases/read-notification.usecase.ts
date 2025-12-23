@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notification } from 'src/entities/notification.entity';
-import MessageHandler from 'src/common/message';
-import { LoggedDto } from 'src/common/dtos/logged.dto';
-import { updateAuditFields } from 'src/common/utils/audit.util';
+
 import { ADMIN } from 'src/common/constant/constant';
+import { LoggedDto } from 'src/common/dtos/logged.dto';
+import MessageHandler from 'src/common/message';
+import { updateAuditFields } from 'src/common/utils/audit.util';
+import { Notification } from 'src/entities/notification.entity';
 
 @Injectable()
 export class ReadNotificationUseCase {

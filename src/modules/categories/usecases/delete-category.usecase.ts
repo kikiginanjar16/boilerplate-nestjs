@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/entities/category.entity';
-import { assertOwnershipOrAdmin } from 'src/common/utils/ownership.util';
-import { deleteAuditFields } from 'src/common/utils/audit.util';
-import { LoggedDto } from 'src/common/dtos/logged.dto';
 import { Repository } from 'typeorm';
+
+import { LoggedDto } from 'src/common/dtos/logged.dto';
+import { deleteAuditFields } from 'src/common/utils/audit.util';
+import { assertOwnershipOrAdmin } from 'src/common/utils/ownership.util';
+import { Category } from 'src/entities/category.entity';
 
 @Injectable()
 export class DeleteCategoryUseCase {

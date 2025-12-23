@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Permission } from 'src/entities/permission.entity';
-import MessageHandler from 'src/common/message';
+
 import { LoggedDto } from 'src/common/dtos/logged.dto';
-import { assertOwnershipOrAdmin } from 'src/common/utils/ownership.util';
+import MessageHandler from 'src/common/message';
 import { updateAuditFields } from 'src/common/utils/audit.util';
+import { assertOwnershipOrAdmin } from 'src/common/utils/ownership.util';
+import { Permission } from 'src/entities/permission.entity';
 
 @Injectable()
 export class UpdatePermissionUseCase {

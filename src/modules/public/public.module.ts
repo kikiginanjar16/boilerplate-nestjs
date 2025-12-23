@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LoginController } from './login.controller';
-import { LoginUseCase } from './usecases/login.usecase';
+
 import { User } from 'src/entities/user.entity';
-import { RegisterController } from './register.controller';
+
 import { ForgotController } from './forgot.controller';
+import { LoginController } from './login.controller';
+import { RegisterController } from './register.controller';
 import { ForgotUseCase } from './usecases/forgot.usecase';
+import { LoginUseCase } from './usecases/login.usecase';
 import { RegisterUseCase } from './usecases/register.usecase';
 
 @Module({

@@ -10,20 +10,22 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+
+import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import MessageHandler from 'src/common/message';
 import { Role } from 'src/entities/role.entity';
+import { Roles } from 'src/guards/roles.decorator';
+import { RolesGuard } from 'src/guards/roles.guard';
 import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
+
 import { RoleDto } from './dto/form.dto';
-import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
-import { Roles } from 'src/guards/roles.decorator';
-import { RolesGuard } from 'src/guards/roles.guard';
-import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { CreateRoleUseCase } from './usecases/create-role.usecase';
+import { DeleteRoleUseCase } from './usecases/delete-role.usecase';
 import { GetRoleUseCase } from './usecases/get-role.usecase';
 import { UpdateRoleUseCase } from './usecases/update-role.usecase';
-import { DeleteRoleUseCase } from './usecases/delete-role.usecase';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'roles' })

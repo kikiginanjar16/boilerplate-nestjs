@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { encryptText, hashText } from 'pii-cyclops';
+import { Repository } from 'typeorm';
+
 import Constant from 'src/common/constant';
 import MessageHandler from 'src/common/message';
 import { User } from 'src/entities/user.entity';
 import { Common } from 'src/libraries/common';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class RegisterUseCase {

@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { encryptText, hashText } from 'pii-cyclops';
 import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import { UserDto } from '../dto/form.dto';
+
 import Constant from 'src/common/constant';
-import { Common } from 'src/libraries/common';
 import { LoggedDto } from 'src/common/dtos/logged.dto';
 import { createAuditFields } from 'src/common/utils/audit.util';
-import { encryptText, hashText } from 'pii-cyclops';
+import { User } from 'src/entities/user.entity';
+import { Common } from 'src/libraries/common';
+
+import { UserDto } from '../dto/form.dto';
+
 
 @Injectable()
 export class CreateUserUseCase {
