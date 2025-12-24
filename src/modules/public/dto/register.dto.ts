@@ -23,18 +23,21 @@ export class RegisterDto {
     })
     public name: string;
 
+    @IsString()
     @ApiProperty({
         description: 'The company associated with the user (e.g., name or details)',
         example: 'Example Corp',
     })
     public company: any;
 
+    @IsString()
     @ApiProperty({
         description: 'The phone number of the user',
         example: '+1234567890',
     })
     public phone: string;
 
+    @IsString()
     @ApiProperty({
         description: 'The address of the user',
         example: '123 Main St, Anytown, USA',
