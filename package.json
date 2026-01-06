@@ -12,8 +12,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint '{src,apps,libs,test}/**/*.ts' --fix",
-    "lint:check": "eslint '{src,apps,libs,test}/**/*.ts'",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:check": "eslint \"src/**/*.ts\"",
     "prepare": "husky install",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,6 +22,7 @@
     "test:e2e": "echo 'No e2e tests implemented yet.'"
   },
   "dependencies": {
+    "@b8n/nestjs-rapidoc": "^1.0.9",
     "@nestjs/common": "11.1.11",
     "@nestjs/core": "11.1.11",
     "@nestjs/platform-express": "11.1.11",
@@ -34,6 +35,7 @@
     "class-validator": "^0.14.1",
     "express": "4.22.1",
     "express-basic-auth": "^1.2.1",
+    "express-fingerprint": "^1.2.2",
     "form-data": "^4.0.4",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",

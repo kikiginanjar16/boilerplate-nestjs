@@ -73,6 +73,24 @@ Each module follows a layered approach:
 * **Use case**: Encapsulated domain logic.
 * **Repository/Entity**: Persistence via TypeORM repositories.
 
+## SOLID Principles
+The project strictly adheres to SOLID principles to ensure maintainability and scalability:
+- **Single Responsibility Principle (SRP)**: Each class has a distinct responsibility. Controllers handle HTTP requests, Use Cases execute business logic, and Repositories manage data access.
+- **Open/Closed Principle (OCP)**: The modular architecture allows functionality to be extended by adding new modules without modifying the core system.
+- **Liskov Substitution Principle (LSP)**: Shared contracts and base entities (like `BaseEntity`) ensure derived classes can be used interchangeably.
+- **Interface Segregation Principle (ISP)**: Focused DTOs and interfaces ensure classes only depend on what they use.
+- **Dependency Inversion Principle (DIP)**: High-level modules (Controllers/Use Cases) depend on abstractions (Services/Repositories) injected via Dependency Injection, not concrete implementations.
+
+## Design Patterns Used
+- **Dependency Injection**: Fundamental to NestJS, used to manage dependencies between Controllers, Services, and Repositories.
+- **Singleton**: Services and Repositories are singletons by default, ensuring efficient memory usage.
+- **Decorator**: Heavily used (`@Controller`, `@Injectable`, `@Get`) to attach metadata and behavior to classes and methods.
+- **Repository**: TypeORM repositories provide an abstraction layer for database operations.
+- **Use Case (Interactor)**: Domain logic is encapsulated in dedicated Use Case classes (e.g., inside `modules/users/usecases/`), promoting cleaner architecture.
+- **DTO (Data Transfer Object)**: Strictly typed objects define the shape of data sent between the client and server.
+- **Middleware**: Custom middleware (e.g., `JwtValidate`) processes requests before they reach the route handler (Chain of Responsibility).
+- **Builder**: Used (e.g., `DocumentBuilder`) to construct complex configuration objects fluently.
+
 ## Development Workflow
 - Start development server: `npm run start:dev`
 - Build for production: `npm run build` (output to `dist`)

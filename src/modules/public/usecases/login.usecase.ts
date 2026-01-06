@@ -20,67 +20,63 @@ export class LoginUseCase {
     ) { }
 
     async doLoginAdmin(req: any, body: LoginDto): Promise<any> {
-        try {
-            const { username, password } = body;
-            const email_hash = hashText(username);
-            const user = await this.userRepository.findOne({
-                where: { email_hash, role: ADMIN },
-                select: {
-                    id: true,
-                    phone: true,
-                    name: true,
-                    role: true,
-                    password: true,
-                }
-            });
-            if (!user) {
-                throw new Error(MessageHandler.ERR001);
-            }
 
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                throw new Error(MessageHandler.ERR001);
+        const { username, password } = body;
+        const email_hash = hashText(username);
+        const user = await this.userRepository.findOne({
+            where: { email_hash, role: ADMIN },
+            select: {
+                id: true,
+                phone: true,
+                name: true,
+                role: true,
+                password: true,
             }
-
-            const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role };
-            const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
-            return { fingerprint: true, user: { id: user.id, phone: user.phone, name: user.name }, token };
-        } catch (error) {
-            throw error;
+        });
+        if (!user) {
+            throw new Error(MessageHandler.ERR001);
         }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new Error(MessageHandler.ERR001);
+        }
+
+        const payload = { id: user.id, phone: user.phone, name: user.name, role: user.role };
+        const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
+        return { fingerprint: true, user: { id: user.id, phone: user.phone, name: user.name }, token };
+
     }
 
     async doLogin(req: any, body: LoginDto): Promise<any> {
-        try {
-            const { username, password } = body;
-            const email_hash = hashText(username);
-            const user = await this.userRepository.findOne({
-                where: { email_hash },
-                select: {
-                    id: true,
-                    phone: true,
-                    name: true,
-                    role: true,
-                    password: true,
-                    fingerprint: true,
-                }
-            });
 
-            if (!user) {
-                throw new Error(MessageHandler.ERR001);
+        const { username, password } = body;
+        const email_hash = hashText(username);
+        const user = await this.userRepository.findOne({
+            where: { email_hash },
+            select: {
+                id: true,
+                phone: true,
+                name: true,
+                role: true,
+                password: true,
+                fingerprint: true,
             }
+        });
 
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                throw new Error(MessageHandler.ERR001);
-            }
-
-            await this.userRepository.update(user.id, { fingerprint: req.fingerprint.hash });
-            const payload = { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar };
-            const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
-            return { fingerprint: true, user: { id: user.id, name: user.name, avatar: user.avatar }, token };
-        } catch (error) {
-            throw error;
+        if (!user) {
+            throw new Error(MessageHandler.ERR001);
         }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new Error(MessageHandler.ERR001);
+        }
+
+        await this.userRepository.update(user.id, { fingerprint: req.fingerprint.hash });
+        const payload = { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar };
+        const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
+        return { fingerprint: true, user: { id: user.id, name: user.name, avatar: user.avatar }, token };
+
     }
 }

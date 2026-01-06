@@ -13,37 +13,35 @@ export class RegisterUseCase {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>
-    ) {}
+    ) { }
 
     async doRegister(registerDto: any): Promise<User> {
-        try {
-            const email_hash = hashText(registerDto.email);
-            const check = await this.userRepository.findOne({ 
-                where: { email_hash },
-             });
 
-            if (check) {
-                throw new Error(MessageHandler.ERR006);
-            }
+        const email_hash = hashText(registerDto.email);
+        const check = await this.userRepository.findOne({
+            where: { email_hash },
+        });
 
-            const name = registerDto.name;
-            const email = encryptText(registerDto.email, Constant.JWT_SECRET).encrypted;
-            const phone = encryptText(registerDto.phone, Constant.JWT_SECRET).encrypted;
-            const address = encryptText(registerDto.address, Constant.JWT_SECRET).encrypted;
-            const user = new User();
-            
-            user.name = name;
-            user.email = email;
-            user.phone = phone;
-            user.address = address;
-            user.email_hash = email_hash;
-            user.avatar = Constant.DEFAULT_AVATAR;
-            user.password = await new Common().hashPassword(registerDto.password);
-            const saved = await this.userRepository.save(user);
-            delete saved.password;
-            return saved;
-        } catch (error) {
-            throw error;   
+        if (check) {
+            throw new Error(MessageHandler.ERR006);
         }
+
+        const name = registerDto.name;
+        const email = encryptText(registerDto.email, Constant.JWT_SECRET).encrypted;
+        const phone = encryptText(registerDto.phone, Constant.JWT_SECRET).encrypted;
+        const address = encryptText(registerDto.address, Constant.JWT_SECRET).encrypted;
+        const user = new User();
+
+        user.name = name;
+        user.email = email;
+        user.phone = phone;
+        user.address = address;
+        user.email_hash = email_hash;
+        user.avatar = Constant.DEFAULT_AVATAR;
+        user.password = await new Common().hashPassword(registerDto.password);
+        const saved = await this.userRepository.save(user);
+        delete saved.password;
+        return saved;
+
     }
 }

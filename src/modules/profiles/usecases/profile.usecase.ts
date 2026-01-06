@@ -35,7 +35,7 @@ export class ProfileUseCase {
   }
 
   async findOne(id: string): Promise<any> {
-    const data =  await this.repository.findOneBy({ id: id });
+    const data = await this.repository.findOneBy({ id: id });
     if (!data) {
       throw new Error(MessageHandler.ERR005);
     }
@@ -45,31 +45,28 @@ export class ProfileUseCase {
   }
 
   async uploadAvatar(id: string, file: any): Promise<any> {
-    try {
-      const data = await this.repository.findOneBy({ id: id });
-      if (!data) {
-        throw new Error(MessageHandler.ERR005);
-      }
 
-      const objectName = `avatar/${id}-${file.originalname}`;
-      const metaData: any = {
-        'Content-Type': file.mimetype,
-      };
-
-      const uploaded: any = await new MinioClient().upload(
-        objectName,
-        file.buffer,
-        metaData
-      )
-
-      console.log(uploaded);
-      return this.repository.update({
-        id: id,
-      }, {
-        avatar: uploaded.url
-      });
-    } catch (error) {
-      throw error;
+    const data = await this.repository.findOneBy({ id: id });
+    if (!data) {
+      throw new Error(MessageHandler.ERR005);
     }
+
+    const objectName = `avatar/${id}-${file.originalname}`;
+    const metaData: any = {
+      'Content-Type': file.mimetype,
+    };
+
+    const uploaded: any = await new MinioClient().upload(
+      objectName,
+      file.buffer,
+      metaData
+    )
+
+    console.log(uploaded);
+    return this.repository.update({
+      id: id,
+    }, {
+      avatar: uploaded.url
+    });
   }
 }

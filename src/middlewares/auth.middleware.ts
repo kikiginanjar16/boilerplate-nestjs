@@ -6,12 +6,13 @@ import MessageHandler from 'src/common/message';
 import { IResponse } from 'src/libraries/common/request.interface';
 
 const JwtValidate = (req: Request, res: IResponse, next: NextFunction) => {
+     
     try {
         const excluded = [
-            '/v1/login', 
-            '/v1/register', 
-            '/v1/forgot-password', 
-            '/v1/otp', 
+            '/v1/login',
+            '/v1/register',
+            '/v1/forgot-password',
+            '/v1/otp',
             '/v1/otp/verify',
             '/v1/participants'
         ];
@@ -22,7 +23,7 @@ const JwtValidate = (req: Request, res: IResponse, next: NextFunction) => {
 
         const type = req.header('Authorization')?.split(' ')[0];
         const token = req.header('Authorization')?.split(' ')[1];
-        
+
         if (!token) {
             return res.status(401).json({ message: MessageHandler.ERR007 });
         }

@@ -10,7 +10,8 @@ import Constant from './common/constant';
 import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
 import JwtValidate from './middlewares/auth.middleware';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Fingerprint = require('express-fingerprint');
 const fingerprint = Fingerprint({
   parameters: [
@@ -23,15 +24,15 @@ const fingerprint = Fingerprint({
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-    app.use(`/docs`, expressBasicAuth({
-      users: {
-        [SWAGGER_USER]: SWAGGER_PASSWORD,
-      },
-      challenge: true,
-    }),
+  app.use(`/docs`, expressBasicAuth({
+    users: {
+      [SWAGGER_USER]: SWAGGER_PASSWORD,
+    },
+    challenge: true,
+  }),
   );
 
- const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle("BE API Documentation")
     .setDescription("API Description for BE")
     .setVersion("1.0")
@@ -48,7 +49,7 @@ async function bootstrap() {
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  RapidocModule.setup("docs", app, documentFactory, {
+  RapidocModule.setup("docs", app as any, documentFactory, {
     rapidocOptions: {
       persistAuth: true,
     },
