@@ -17,7 +17,9 @@ import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 
-import { UserDto } from './dto/form.dto';
+import { ProfileUserDto } from './dto/form.dto';
+
+
 import { ProfileUseCase } from './usecases/profile.usecase';
 import { User } from '../../entities/user.entity';
 
@@ -26,9 +28,9 @@ import { User } from '../../entities/user.entity';
 export class ProfileController {
   constructor(private readonly profileUseCase: ProfileUseCase) { }
 
-  
+
   @Put()
-  async update(@Res() res, @Body() body: UserDto): Promise<any> {
+  async update(@Res() res, @Body() body: ProfileUserDto): Promise<any> {
     try {
       const logged = res.locals.logged;
       console.log("logged", logged)
@@ -62,15 +64,15 @@ export class ProfileController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@Res() res, 
-  @UploadedFile(
-    new ParseFilePipe({
-      validators: [
-        new MaxFileSizeValidator({ maxSize: 2 * 1000 * 1024 }),
-        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-      ],
-    }),
-  )file: Express.Multer.File): Promise<void> {
+  async uploadAvatar(@Res() res,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1000 * 1024 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    ) file: Express.Multer.File): Promise<void> {
     try {
       const id = res.locals.logged.id;
       const data = await this.profileUseCase.uploadAvatar(id, file);
