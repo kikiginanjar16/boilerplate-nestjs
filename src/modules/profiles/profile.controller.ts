@@ -18,8 +18,6 @@ import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 
 import { ProfileUserDto } from './dto/form.dto';
-
-
 import { ProfileUseCase } from './usecases/profile.usecase';
 import { User } from '../../entities/user.entity';
 
