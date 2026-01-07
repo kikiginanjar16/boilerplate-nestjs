@@ -24,6 +24,7 @@ import { PermissionDto } from './dto/form.dto';
 import { CreatePermissionUseCase } from './usecases/create-permission.usecase';
 import { DeletePermissionUseCase } from './usecases/delete-permission.usecase';
 import { GetPermissionUseCase } from './usecases/get-permission.usecase';
+import { GetUamUarUseCase } from './usecases/get-uam-uar.usecase';
 import { UpdatePermissionUseCase } from './usecases/update-permission.usecase';
 
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
@@ -32,6 +33,7 @@ export class PermissionController {
   constructor(
     private readonly createPermissionUseCase: CreatePermissionUseCase,
     private readonly getPermissionUseCase: GetPermissionUseCase,
+    private readonly getUamUarUseCase: GetUamUarUseCase,
     private readonly updatePermissionUseCase: UpdatePermissionUseCase,
     private readonly deletePermissionUseCase: DeletePermissionUseCase,
   ) { }
@@ -79,6 +81,24 @@ export class PermissionController {
       const { page, limit } = query;
       const logged = res.locals.logged;
       const data: any = await this.getPermissionUseCase.paginate(page, limit, logged);
+      return respond(res, 200, true, MessageHandler.SUC000, data);
+    } catch (error) {
+      logger.error('[Permission] ERROR', error);
+      if (error.message) {
+        return respond(res, 400, false, error.message);
+      }
+      return respond(res, 500, false, MessageHandler.ERR000);
+    }
+  }
+
+  @Get('uam-uar')
+  @ApiProperty({ type: () => PaginateDto })
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
+  async findUamUar(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
+    try {
+      const { page, limit } = query;
+      const data: any = await this.getUamUarUseCase.paginate(page, limit);
       return respond(res, 200, true, MessageHandler.SUC000, data);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
