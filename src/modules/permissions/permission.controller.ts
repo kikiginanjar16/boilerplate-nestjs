@@ -109,6 +109,77 @@ export class PermissionController {
     }
   }
 
+  @Get('uam-uar/export')
+  @UseGuards(RolesGuard)
+  @Roles(ADMIN)
+  async exportUamUar(@Res() res): Promise<any> {
+    try {
+      const data = await this.getUamUarUseCase.listAll();
+      const headers = [
+        'User ID',
+        'User Name',
+        'User Email',
+        'User Role',
+        'Role ID',
+        'Role Title',
+        'Menu ID',
+        'Menu Title',
+        'Menu URL',
+        'Can Create',
+        'Can Read',
+        'Can Update',
+        'Can Delete',
+        'Can Approve',
+      ];
+
+      const headerToKeyMap: Record<string, string> = {
+        'User ID': 'userId',
+        'User Name': 'userName',
+        'User Email': 'userEmail',
+        'User Role': 'userRole',
+        'Role ID': 'roleId',
+        'Role Title': 'roleTitle',
+        'Menu ID': 'menuId',
+        'Menu Title': 'menuTitle',
+        'Menu URL': 'menuUrl',
+        'Can Create': 'canCreate',
+        'Can Read': 'canRead',
+        'Can Update': 'canUpdate',
+        'Can Delete': 'canDelete',
+        'Can Approve': 'canApprove',
+      };
+
+      const escapeCsv = (value: any): string => {
+        if (value === null || value === undefined) return '';
+        const stringValue = String(value);
+        if (/[",\n]/.test(stringValue)) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      };
+
+      const csvLines = [
+        headers.join(','),
+        ...data.map((row) =>
+          headers
+            .map((header) => escapeCsv(row[headerToKeyMap[header]]))
+            .join(',')
+        ),
+      ];
+      const csvContent = `${csvLines.join('\n')}\n`;
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="uam-uar.csv"');
+      return res.status(200).send(csvContent);
+    } catch (error) {
+      logger.error('[Permission] ERROR', error);
+      if (error.message) {
+        return respond(res, 400, false, error.message);
+      }
+      return respond(res, 500, false, MessageHandler.ERR000);
+    }
+  }
+
   @Get(':id')
   @UseGuards(RolesGuard)
   @Roles(ADMIN)

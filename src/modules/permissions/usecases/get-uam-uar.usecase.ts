@@ -14,9 +14,23 @@ export class GetUamUarUseCase {
         const viewName = 'uam_uar_view';
         const data = await this.dataSource.query(
             `
-                SELECT *
+                SELECT
+                    user_id AS "userId",
+                    user_name AS "userName",
+                    user_email AS "userEmail",
+                    user_role AS "userRole",
+                    role_id AS "roleId",
+                    role_title AS "roleTitle",
+                    menu_id AS "menuId",
+                    menu_title AS "menuTitle",
+                    menu_url AS "menuUrl",
+                    can_create AS "canCreate",
+                    can_read AS "canRead",
+                    can_update AS "canUpdate",
+                    can_delete AS "canDelete",
+                    can_approve AS "canApprove"
                 FROM ${viewName}
-                ORDER BY "userName" ASC, "roleTitle" ASC, "menuTitle" ASC
+                ORDER BY user_name ASC, role_title ASC, menu_title ASC
                 LIMIT $1 OFFSET $2
             `,
             [limit, offset]
@@ -38,5 +52,32 @@ export class GetUamUarUseCase {
                 total_page: Math.ceil(total / limit),
             }
         };
+    }
+
+    async listAll(): Promise<UamUarView[]> {
+        const viewName = 'uam_uar_view';
+        const data = await this.dataSource.query(
+            `
+                SELECT
+                    user_id AS "userId",
+                    user_name AS "userName",
+                    user_email AS "userEmail",
+                    user_role AS "userRole",
+                    role_id AS "roleId",
+                    role_title AS "roleTitle",
+                    menu_id AS "menuId",
+                    menu_title AS "menuTitle",
+                    menu_url AS "menuUrl",
+                    can_create AS "canCreate",
+                    can_read AS "canRead",
+                    can_update AS "canUpdate",
+                    can_delete AS "canDelete",
+                    can_approve AS "canApprove"
+                FROM ${viewName}
+                ORDER BY user_name ASC, role_title ASC, menu_title ASC
+            `
+        );
+
+        return data as UamUarView[];
     }
 }
