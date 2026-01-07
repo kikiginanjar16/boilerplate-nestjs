@@ -9,6 +9,10 @@ export default class Constant {
     static readonly DB_USER: string = process.env.DB_USER || 'user';
     static readonly DB_PASSWORD: string = process.env.DB_PASSWORD || 'password';
     static readonly DB_NAME: string = process.env.DB_NAME || 'database';
+    static readonly REDIS_URL: string = process.env.REDIS_URL || 'redis://localhost:6379';
+    static readonly RABBITMQ_URL: string = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
+    static readonly KAFKA_BROKERS: string = process.env.KAFKA_BROKERS || 'localhost:9092';
+    static readonly KAFKA_CLIENT_ID: string = process.env.KAFKA_CLIENT_ID || 'nestjs-app';
     static readonly JWT_SECRET: string = process.env.JWT_SECRET || 'secret';
     static readonly SALT_ROUNDS: number = 10;
     static readonly DEFAULT_AVATAR : string = 'https://www.shutterstock.com/image-vector/young-smiling-man-avatar-brown-600nw-2261401207.jpg';
