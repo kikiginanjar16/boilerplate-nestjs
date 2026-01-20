@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import axios from 'axios';
 import { randomBytes } from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { encryptText, hashText } from 'pii-cyclops';
@@ -100,6 +100,7 @@ export class GoogleOauthUseCase {
 
       return response.data;
     } catch (error) {
+      console.error('Google token verification error:', error);
       throw new Error(MessageHandler.ERR001);
     }
   }
