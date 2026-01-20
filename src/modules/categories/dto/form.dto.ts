@@ -9,7 +9,7 @@ export class CategoryDto {
         example: 'Electronics',
         nullable: true,
     })
-    public type?: string;
+    public category?: string;
 
     @IsString()
     @IsOptional()

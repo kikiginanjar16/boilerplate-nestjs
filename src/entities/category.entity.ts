@@ -7,7 +7,7 @@ import { BaseEntity } from './base.entity';
 export class Category extends BaseEntity {
 
     @Column()
-    type: string;
+    category: string;
 
     @Column()
     sub_category: string;

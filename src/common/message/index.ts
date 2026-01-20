@@ -24,4 +24,5 @@ export default class MessageHandler {
     static readonly ERR009 = 'OTP sudah kadaluarsa';
     static readonly ERR010 = 'OTP tidak valid';
     static readonly ERR011 = 'Token sudah tidak berlaku';
+    static readonly ERR012 = 'Terlalu banyak percobaan, coba lagi nanti';
 }
