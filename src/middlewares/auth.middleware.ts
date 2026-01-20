@@ -15,7 +15,9 @@ const EXCLUDED_PATHS = [
   '/v1/register',
   '/v1/forgot-password',
   '/v1/otp',
-  '/v1/otp/verify'
+  '/v1/otp/verify',
+  '/v1/participants',
+  '/v1/oauth/google',
 ];
 
 @Injectable()

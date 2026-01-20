@@ -14,7 +14,7 @@ export class User extends BaseEntity {
   @Column({ type: 'int', default: 1 })
   public is_active: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   public phone: string;
 
   @Column({ nullable: true })

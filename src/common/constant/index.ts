@@ -14,6 +14,7 @@ export default class Constant {
     static readonly KAFKA_BROKERS: string = process.env.KAFKA_BROKERS || 'localhost:9092';
     static readonly KAFKA_CLIENT_ID: string = process.env.KAFKA_CLIENT_ID || 'nestjs-app';
     static readonly JWT_SECRET: string = process.env.JWT_SECRET || 'secret';
+    static readonly GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || '';
     static readonly SALT_ROUNDS: number = 10;
     static readonly DEFAULT_AVATAR : string = 'https://www.shutterstock.com/image-vector/young-smiling-man-avatar-brown-600nw-2261401207.jpg';
     static readonly MINIO_ENDPOINT: string = process.env.MINIO_ENDPOINT || 'localhost';
