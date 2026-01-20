@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import Constant from './common/constant';
+import { RevokedToken } from './entities/revoked-token.entity';
+import { JwtValidateMiddleware } from './middlewares/auth.middleware';
 import { CategoryModule } from './modules/categories/category.module';
 import { MenuModule } from './modules/menus/menu.module';
 import { NotificationModule } from './modules/notifications/notification.module';
@@ -23,6 +25,7 @@ import { UsersModule } from './modules/users/users.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([RevokedToken]),
     UsersModule,
     PublicModule,
     CategoryModule,
@@ -32,5 +35,10 @@ import { UsersModule } from './modules/users/users.module';
     RoleModule,
     ProfileModule
   ],
+  providers: [JwtValidateMiddleware],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtValidateMiddleware).forRoutes('*');
+  }
+}

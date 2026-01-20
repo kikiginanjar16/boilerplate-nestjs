@@ -1,0 +1,27 @@
+[
+    {
+        "name": "transaction",
+        "entity": "transactions",
+        "routes": "transactions",
+        "idType": "uuid",
+        "fields": [
+            {
+                "name": "user_id",
+                "type": "uuid",
+                "length": 255,
+                "unique": false,
+                "nullable": false,
+                "description": "Title of the todo item",
+                "example": "Complete project report"
+            },
+            {
+                "name": "inout",
+                "type": "text",
+                "unique": false,
+                "nullable": true,
+                "description": "Detailed description of the todo item",
+                "example": "Write and review the final report for the Q2 project"
+            }
+        ]
+    }
+]

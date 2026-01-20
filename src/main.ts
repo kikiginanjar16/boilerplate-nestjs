@@ -8,7 +8,6 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import Constant from './common/constant';
 import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
-import JwtValidate from './middlewares/auth.middleware';
 
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -58,7 +57,6 @@ async function bootstrap() {
 
   app.enableCors();
   app.enableVersioning();
-  app.use(JwtValidate);
   app.use(fingerprint);
   app.use(helmet());
   await app.listen(Constant.PORT);

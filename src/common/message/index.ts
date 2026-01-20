@@ -10,6 +10,7 @@ export default class MessageHandler {
     static readonly SUC006 = 'Anda berhasil login';
     static readonly SUC007 = 'Pendaftaran anda telah berhasil';
     static readonly SUC008 = 'OTP berhasil dikirim';
+    static readonly SUC009 = 'Anda berhasil logout';
 
     static readonly ERR000 = 'Kesalahan pada server';
     static readonly ERR001 = 'Kredensial tidak valid';
@@ -22,5 +23,5 @@ export default class MessageHandler {
     static readonly ERR008 = 'Tokan tidak valid';
     static readonly ERR009 = 'OTP sudah kadaluarsa';
     static readonly ERR010 = 'OTP tidak valid';
+    static readonly ERR011 = 'Token sudah tidak berlaku';
 }
-
