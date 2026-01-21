@@ -11,8 +11,6 @@ import { RevokedToken } from './entities/revoked-token.entity';
 import { JwtValidateMiddleware } from './middlewares/auth.middleware';
 import { RateLimitMiddleware } from './middlewares/rate-limit.middleware';
 import { CategoryModule } from './modules/categories/category.module';
-import { ItemModule } from './modules/item/item.module';
-import { LeadModule } from './modules/lead/lead.module';
 import { MenuModule } from './modules/menus/menu.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { PermissionModule } from './modules/permissions/permission.module';
@@ -42,8 +40,6 @@ import { UsersModule } from './modules/users/users.module';
     PermissionModule,
     RoleModule,
     ProfileModule,
-    ItemModule,
-    LeadModule
   ],
   providers: [JwtValidateMiddleware, RateLimitMiddleware],
 })
