@@ -12,7 +12,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+import { JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
 import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
@@ -22,6 +24,7 @@ import { ProfileUseCase } from './usecases/profile.usecase';
 import { User } from '../../entities/user.entity';
 
 
+@ApiBearerAuth(JWT_ACCESS_TOKEN)
 @Controller({ version: '1', path: 'profile' })
 export class ProfileController {
   constructor(private readonly profileUseCase: ProfileUseCase) { }

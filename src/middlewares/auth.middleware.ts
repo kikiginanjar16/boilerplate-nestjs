@@ -25,7 +25,7 @@ export class JwtValidateMiddleware implements NestMiddleware {
   constructor(
     @InjectRepository(RevokedToken)
     private readonly revokedTokenRepository: Repository<RevokedToken>,
-  ) {}
+  ) { }
 
   async use(req: Request, res: IResponse, next: NextFunction) {
     try {

@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { encryptText, hashText } from 'pii-cyclops';
 import { Repository } from 'typeorm';
 
-import Constant from 'src/common/constant';
-import { ADMIN } from 'src/common/constant/constant';
+import { ADMIN, PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
 import { LoggedDto } from 'src/common/dtos/logged.dto';
 import MessageHandler from 'src/common/message';
 import { updateAuditFields } from 'src/common/utils/audit.util';
@@ -18,9 +17,9 @@ export class UpdateUserUseCase {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
-  ) {}
+  ) { }
 
-  async execute(id : string, body: any, logged: LoggedDto): Promise<any> {
+  async execute(id: string, body: any, logged: LoggedDto): Promise<any> {
     const data = await this.repository.findOneBy({ id: id });
     if (!data) {
       throw new Error(MessageHandler.ERR005);
@@ -30,23 +29,23 @@ export class UpdateUserUseCase {
       throw new Error(MessageHandler.ERR007);
     }
 
-    if(body.email){
+    if (body.email) {
       const email = body.email;
-      const email_encrypted = encryptText(email, Constant.JWT_SECRET).encrypted;
+      const email_encrypted = encryptText(email, PII_ENCRYPTION_KEY).encrypted;
       const email_hash = hashText(email);
       body.email = email_encrypted;
       body.email_hash = email_hash;
     }
 
-    if(body.phone){
+    if (body.phone) {
       const phone = body.phone;
-      const phone_encrypted  = encryptText(phone, Constant.JWT_SECRET).encrypted;
+      const phone_encrypted = encryptText(phone, PII_ENCRYPTION_KEY).encrypted;
       body.phone = phone_encrypted;
     }
 
-    if(body.address){
+    if (body.address) {
       const address = body.address;
-      const address_encrypted = encryptText(address, Constant.JWT_SECRET).encrypted;
+      const address_encrypted = encryptText(address, PII_ENCRYPTION_KEY).encrypted;
       body.address = address_encrypted;
     }
 

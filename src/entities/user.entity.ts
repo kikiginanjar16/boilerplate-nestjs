@@ -1,6 +1,8 @@
-import { Column, Entity, Index } from 'typeorm';
+import { AfterLoad, Column, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from './base.entity';
+import { decryptText } from 'pii-cyclops';
+import { PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
 
 @Entity('users')
 @Index(['name', 'email', 'phone'])
@@ -42,4 +44,32 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   public agree_terms_condition_policy_at: Date;
 
+  @AfterLoad()
+  decryptPiiData() {
+    if (this.email) {
+      try {
+        this.email = decryptText(this.email, PII_ENCRYPTION_KEY);
+      } catch (error) {
+        console.warn('Failed to decrypt email:', error);
+      }
+    }
+
+    if (this.phone) {
+      try {
+        this.phone = decryptText(this.phone, PII_ENCRYPTION_KEY);
+      } catch (error) {
+        console.warn('Failed to decrypt phone:', error);
+      }
+    }
+
+    if (this.address) {
+      try {
+        this.address = decryptText(this.address, PII_ENCRYPTION_KEY);
+      } catch (error) {
+        console.warn('Failed to decrypt address:', error);
+      }
+    }
+
+    delete this.email_hash;
+  }
 }

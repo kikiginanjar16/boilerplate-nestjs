@@ -10,6 +10,7 @@ import { User } from 'src/entities/user.entity';
 import { Common } from 'src/libraries/common';
 
 import { UserDto } from '../dto/form.dto';
+import { PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
 
 
 @Injectable()
@@ -17,13 +18,13 @@ export class CreateUserUseCase {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
-  ) {}
+  ) { }
 
   async execute(createUserDto: UserDto, logged: LoggedDto): Promise<User> {
     const name = createUserDto.name;
-    const email = encryptText(createUserDto.email, Constant.JWT_SECRET).encrypted;
-    const phone = encryptText(createUserDto.phone, Constant.JWT_SECRET).encrypted;
-    const address = encryptText(createUserDto.address, Constant.JWT_SECRET).encrypted;
+    const email = encryptText(createUserDto.email, PII_ENCRYPTION_KEY).encrypted;
+    const phone = encryptText(createUserDto.phone, PII_ENCRYPTION_KEY).encrypted;
+    const address = encryptText(createUserDto.address, PII_ENCRYPTION_KEY).encrypted;
 
     const user = new User();
     user.name = name;
