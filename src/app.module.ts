@@ -18,6 +18,8 @@ import { ProfileModule } from './modules/profiles/profile.module';
 import { PublicModule } from './modules/public/public.module';
 import { RoleModule } from './modules/roles/role.module';
 import { UsersModule } from './modules/users/users.module';
+import { ItemModule } from './modules/item/item.module';
+import { LeadModule } from './modules/lead/lead.module';
 
 @Module({
   imports: [
@@ -39,10 +41,13 @@ import { UsersModule } from './modules/users/users.module';
     NotificationModule,
     PermissionModule,
     RoleModule,
-    ProfileModule
+    ProfileModule,
+    ItemModule,
+    LeadModule
   ],
   providers: [JwtValidateMiddleware, RateLimitMiddleware],
 })
+
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RateLimitMiddleware).forRoutes(

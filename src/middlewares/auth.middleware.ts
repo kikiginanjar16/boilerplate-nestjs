@@ -29,7 +29,7 @@ export class JwtValidateMiddleware implements NestMiddleware {
 
   async use(req: Request, res: IResponse, next: NextFunction) {
     try {
-      if (EXCLUDED_PATHS.includes(req.path)) {
+      if (EXCLUDED_PATHS.includes(req.baseUrl)) {
         return next();
       }
 

@@ -3,7 +3,7 @@ import { Entity, Column, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
 @Entity("categories")
-@Index(['type', 'status'])
+@Index(['category', 'sub_category', 'status'])
 export class Category extends BaseEntity {
 
     @Column()
