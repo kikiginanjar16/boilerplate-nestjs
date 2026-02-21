@@ -10,16 +10,6 @@ import Constant from './common/constant';
 import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/constant/constant';
 
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const Fingerprint = require('express-fingerprint');
-const fingerprint = Fingerprint({
-  parameters: [
-    Fingerprint.useragent,
-    Fingerprint.acceptHeaders,
-    Fingerprint.geoip
-  ]
-});
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
@@ -57,7 +47,6 @@ async function bootstrap() {
 
   app.enableCors();
   app.enableVersioning();
-  app.use(fingerprint);
   app.use(helmet());
   await app.listen(Constant.PORT);
   console.log(`Application is running on port ${Constant.PORT}`);
