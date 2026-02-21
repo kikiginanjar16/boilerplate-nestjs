@@ -1,8 +1,9 @@
+import { decryptText } from 'pii-cyclops';
 import { AfterLoad, Column, Entity, Index } from 'typeorm';
 
-import { BaseEntity } from './base.entity';
-import { decryptText } from 'pii-cyclops';
 import { PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
+
+import { BaseEntity } from './base.entity';
 
 @Entity('users')
 @Index(['name', 'email', 'phone'])

@@ -4,13 +4,13 @@ import { encryptText, hashText } from 'pii-cyclops';
 import { Repository } from 'typeorm';
 
 import Constant from 'src/common/constant';
+import { PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
 import { LoggedDto } from 'src/common/dtos/logged.dto';
 import { createAuditFields } from 'src/common/utils/audit.util';
 import { User } from 'src/entities/user.entity';
 import { Common } from 'src/libraries/common';
 
 import { UserDto } from '../dto/form.dto';
-import { PII_ENCRYPTION_KEY } from 'src/common/constant/constant';
 
 
 @Injectable()
