@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { AuthAudit } from 'src/entities/auth-audit.entity';
-import logger from 'src/libraries/logger';
 import { AppRequest, getIpAddress } from 'src/libraries/common/http.interface';
+import logger from 'src/libraries/logger';
 
 type AuditStatus = 'success' | 'failed';
 

@@ -1,4 +1,13 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 
 import MessageHandler from 'src/common/message';
 import { RateLimitGuard } from 'src/guards/rate-limit.guard';
@@ -17,6 +26,7 @@ export class OauthController {
   ) {}
 
   @Post('google')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RateLimitGuard)
   async loginGoogle(@Res() res, @Req() req, @Body() body: GoogleOauthDto) {
     try {

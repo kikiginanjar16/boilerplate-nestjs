@@ -50,14 +50,14 @@ export class PermissionController {
   @Roles(ADMIN)
   async create(@CurrentUser() logged: LoggedDto, @Body() body: PermissionDto): Promise<any> {
     try {
-      const data : any = await this.createPermissionUseCase.execute(body, logged);
+      const data: any = await this.createPermissionUseCase.execute(body, logged);
       return buildResponse(true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
       this.throwJsonError(error);
     }
   }
 
-  @Put(":id")
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)

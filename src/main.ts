@@ -1,11 +1,11 @@
 import { RapidocModule } from "@b8n/nestjs-rapidoc";
+import fastifyBasicAuth from '@fastify/basic-auth';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import fastifyBasicAuth from '@fastify/basic-auth';
-import fastifyHelmet from '@fastify/helmet';
-import fastifyMultipart from '@fastify/multipart';
 
 import { AppModule } from './app.module';
 import Constant from './common/constant';

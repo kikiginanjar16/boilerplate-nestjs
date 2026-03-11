@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
-  Req,
   Put,
+  Req,
   Res,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -26,6 +28,7 @@ export class ProfileController {
 
 
   @Put()
+  @HttpCode(HttpStatus.OK)
   async update(@Res() res, @Body() body: ProfileUserDto): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -42,6 +45,7 @@ export class ProfileController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findOne(@Res() res): Promise<User> {
     try {
       const logged = res.locals.logged;
@@ -58,6 +62,7 @@ export class ProfileController {
   }
 
   @Post('upload')
+  @HttpCode(HttpStatus.OK)
   async uploadAvatar(@Req() req, @Res() res): Promise<void> {
     try {
       const upload = await req.file();

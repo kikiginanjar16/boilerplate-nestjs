@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -25,7 +27,7 @@ import { ReadNotificationUseCase } from './usecases/read-notification.usecase';
 import { ReadAllNotificationUseCase } from './usecases/readall-notification.usecase';
 import { UpdateNotificationUseCase } from './usecases/update-notification.usecase';
 
-@Controller({ version: '1', path: 'notifications'})
+@Controller({ version: '1', path: 'notifications' })
 @ApiBearerAuth(JWT_ACCESS_TOKEN)
 export class NotificationController {
   constructor(
@@ -38,6 +40,7 @@ export class NotificationController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async create(@Res() res, @Body() body: NotificationDto): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -52,7 +55,8 @@ export class NotificationController {
     }
   }
 
-  @Put(":id")
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
   async update(@Res() res, @Param('id') id: string, @Body() body: NotificationDto): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -69,6 +73,7 @@ export class NotificationController {
 
   @Get()
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
@@ -84,8 +89,9 @@ export class NotificationController {
     }
   }
 
-  @Get('/my')
+  @Get('my')
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   async me(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
     try {
       const { page, limit } = query;
@@ -102,6 +108,7 @@ export class NotificationController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async findOne(@Res() res, @Param('id') id: string): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -117,6 +124,7 @@ export class NotificationController {
   }
 
   @Put(':id/read')
+  @HttpCode(HttpStatus.OK)
   async read(@Res() res, @Param('id') id: string): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -132,6 +140,7 @@ export class NotificationController {
   }
 
   @Put('read-all')
+  @HttpCode(HttpStatus.OK)
   async readAll(@Res() res): Promise<any> {
     try {
       const logged = res.locals.logged;
@@ -147,6 +156,7 @@ export class NotificationController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {
     try {
       const logged = res.locals.logged;

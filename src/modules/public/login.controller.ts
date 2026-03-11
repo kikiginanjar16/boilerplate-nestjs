@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
   Res,
@@ -17,8 +19,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthAuditUseCase } from './usecases/auth-audit.usecase';
 import { LoginUseCase } from './usecases/login.usecase';
 
-
-@Controller({ version: '1', path: 'login'})
+@Controller({ version: '1', path: 'login' })
 export class LoginController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
@@ -26,6 +27,7 @@ export class LoginController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RateLimitGuard)
   async login(@Res() res, @Req() req, @Body() body: LoginDto): Promise<any> {
       try {
@@ -53,7 +55,8 @@ export class LoginController {
       }
   }
 
-  @Post('/admin')
+  @Post('admin')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RateLimitGuard)
   async loginAdmin(@Res() res, @Req() req, @Body() body: LoginDto): Promise<any> {
     try {

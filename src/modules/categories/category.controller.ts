@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -37,6 +39,7 @@ export class CategoryController {
   ) { }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: CategoryDto): Promise<any> {
@@ -53,7 +56,8 @@ export class CategoryController {
     }
   }
 
-  @Put(":id")
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: CategoryDto): Promise<any> {
@@ -72,6 +76,7 @@ export class CategoryController {
 
   @Get()
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
@@ -90,6 +95,7 @@ export class CategoryController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<any> {
@@ -107,6 +113,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {

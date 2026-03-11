@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -40,6 +42,7 @@ export class UsersController {
   ) { }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() createUserDto: UserDto): Promise<User> {
@@ -56,7 +59,8 @@ export class UsersController {
     }
   }
 
-  @Put(":id")
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: UserDto): Promise<any> {
@@ -75,6 +79,7 @@ export class UsersController {
 
   @Get()
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
@@ -99,6 +104,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<User> {
@@ -116,6 +122,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {

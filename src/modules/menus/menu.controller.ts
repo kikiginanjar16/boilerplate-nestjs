@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -37,6 +39,7 @@ export class MenuController {
   ) { }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async create(@Res() res, @Body() body: MenuDto): Promise<any> {
@@ -53,7 +56,8 @@ export class MenuController {
     }
   }
 
-  @Put(":id")
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async update(@Res() res, @Param('id') id: string, @Body() body: MenuDto): Promise<any> {
@@ -71,6 +75,7 @@ export class MenuController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
@@ -89,6 +94,7 @@ export class MenuController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async findOne(@Res() res, @Param('id') id: string): Promise<any> {
@@ -106,6 +112,7 @@ export class MenuController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
   async remove(@Res() res, @Param('id') id: string): Promise<void> {

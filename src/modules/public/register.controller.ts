@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   Res,
 } from '@nestjs/common';
@@ -19,6 +21,7 @@ export class RegisterController {
   ) { }
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async register(@Res() res, @Body() body: RegisterDto): Promise<any> {
     try {
       const data = await this.registerUseCase.doRegister(body);

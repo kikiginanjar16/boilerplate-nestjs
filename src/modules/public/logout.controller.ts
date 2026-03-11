@@ -1,8 +1,8 @@
-import { Controller, Post, Req, Res } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 
 import MessageHandler from 'src/common/message';
-import logger from 'src/libraries/logger';
 import { getHeader } from 'src/libraries/common/http.interface';
+import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 
 import { AuthAuditUseCase } from './usecases/auth-audit.usecase';
@@ -16,6 +16,7 @@ export class LogoutController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async logout(@Res() res, @Req() req): Promise<any> {
     try {
       const token = getHeader(req, 'authorization')?.split(' ')[1];

@@ -76,9 +76,12 @@ Each module follows a layered approach:
 * **Use case**: Encapsulated domain logic.
 * **Repository/Entity**: Persistence via TypeORM repositories.
 
-Controller conventions:
-- JSON endpoints should return plain objects and consume auth state via `@CurrentUser()`.
-- `@Res()` is reserved for manual response cases such as CSV/file export or low-level streaming.
+Controller conventions in the current codebase:
+- Keep controllers thin and delegate business logic to use cases.
+- Declare `@HttpCode(HttpStatus...)` explicitly on non-export endpoints to make response status obvious and consistent.
+- The codebase still commonly uses `@Res()` plus `respond(...)` and reads auth context from `res.locals.logged`.
+- `@CurrentUser()` is already used in some controllers and is a good fit for JSON-style handlers, but the repository has not been fully migrated away from `@Res()`.
+- Reserve manual response handling for cases that genuinely need it, such as CSV/file export.
 
 ## SOLID Principles
 The project strictly adheres to SOLID principles to ensure maintainability and scalability:
@@ -139,8 +142,9 @@ Follow the existing `controller -> usecase -> entity/repository` pattern instead
 4. Keep controllers thin: map HTTP input/output and delegate domain logic to use cases.
 5. Register the module in [src/app.module.ts](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/src/app.module.ts).
 6. If the module is protected, use `JwtAuthGuard` globally and add `@UseGuards(RolesGuard)` plus `@Roles(...)` only where role restriction is needed.
-7. For JSON endpoints, prefer returning plain objects. Use `@CurrentUser()` for auth context and reserve `@Res()` for file or stream responses.
-8. If you add new environment variables, update both [.env.example](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/.env.example) and the env loader in [src/common/config/env.ts](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/src/common/config/env.ts).
+7. Follow the existing controller style in the target module. In this repository, many JSON endpoints still use `@Res()` with `respond(...)`, while some newer handlers use `@CurrentUser()` and return plain objects.
+8. Add explicit `@HttpCode(HttpStatus...)` on non-export endpoints so controller status handling stays uniform.
+9. If you add new environment variables, update both [.env.example](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/.env.example) and the env loader in [src/common/config/env.ts](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/src/common/config/env.ts).
 
 Minimal module shape:
 ```text
