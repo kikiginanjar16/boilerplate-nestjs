@@ -73,10 +73,13 @@ export class LoginUseCase {
             throw new Error(MessageHandler.ERR001);
         }
 
-        await this.userRepository.update(user.id, { fingerprint: req.fingerprint.hash });
+        const fingerprintHash = req?.fingerprint?.hash;
+        if (fingerprintHash) {
+            await this.userRepository.update(user.id, { fingerprint: fingerprintHash });
+        }
         const payload = { id: user.id, email: user.email, name: user.name, role: user.role, avatar: user.avatar };
         const token = jwt.sign(payload, Constant.JWT_SECRET, { expiresIn: '7d' });
-        return { fingerprint: true, user: { id: user.id, name: user.name, avatar: user.avatar }, token };
+        return { fingerprint: Boolean(fingerprintHash), user: { id: user.id, name: user.name, avatar: user.avatar }, token };
 
     }
 }

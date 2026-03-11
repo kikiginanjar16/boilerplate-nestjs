@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Request } from 'express';
 import { Repository } from 'typeorm';
 
 import { AuthAudit } from 'src/entities/auth-audit.entity';
 import logger from 'src/libraries/logger';
+import { AppRequest, getIpAddress } from 'src/libraries/common/http.interface';
 
 type AuditStatus = 'success' | 'failed';
 
 interface AuditPayload {
-  req: Request;
+  req: AppRequest;
   action: string;
   status: AuditStatus;
   userId?: string;
@@ -51,10 +51,4 @@ export class AuthAuditUseCase {
   }
 }
 
-const getIp = (req: Request): string => {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length > 0) {
-    return forwarded.split(',')[0].trim();
-  }
-  return req.ip || 'unknown';
-};
+const getIp = (req: AppRequest): string => getIpAddress(req);

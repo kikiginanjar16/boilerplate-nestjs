@@ -1,9 +1,11 @@
 import { RapidocModule } from "@b8n/nestjs-rapidoc";
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as expressBasicAuth from 'express-basic-auth';
-import helmet from 'helmet';
+import fastifyBasicAuth from '@fastify/basic-auth';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 
 import { AppModule } from './app.module';
 import Constant from './common/constant';
@@ -11,15 +13,38 @@ import { JWT_ACCESS_TOKEN, SWAGGER_PASSWORD, SWAGGER_USER } from './common/const
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  app.use(`/docs`, expressBasicAuth({
-    users: {
-      [SWAGGER_USER]: SWAGGER_PASSWORD,
+  const logger = new Logger('Bootstrap');
+  const adapter = new FastifyAdapter();
+  const fastify = adapter.getInstance();
+
+  await fastify.register(fastifyHelmet as never);
+  await fastify.register(fastifyMultipart as never, {
+    limits: {
+      fileSize: 2 * 1000 * 1024,
     },
-    challenge: true,
-  }),
+  });
+  await fastify.register(fastifyBasicAuth as never, {
+    validate: async (username, password) => {
+      if (username !== SWAGGER_USER || password !== SWAGGER_PASSWORD) {
+        throw new Error('Unauthorized');
+      }
+    },
+    authenticate: true,
+  });
+
+  fastify.addHook('onRequest', async (request, reply) => {
+    const path = request.url.split('?')[0];
+    if (path === '/docs' || path.startsWith('/docs/') || path === '/docs-json') {
+      await (fastify as any).basicAuth(request, reply);
+    }
+  });
+
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    adapter,
   );
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const config = new DocumentBuilder()
     .setTitle("BE API Documentation")
@@ -47,8 +72,10 @@ async function bootstrap() {
 
   app.enableCors();
   app.enableVersioning();
-  app.use(helmet());
-  await app.listen(Constant.PORT);
-  console.log(`Application is running on port ${Constant.PORT}`);
+  logger.log(
+    `Database synchronize is ${Constant.DB_SYNCHRONIZE ? 'enabled' : 'disabled'} for NODE_ENV=${Constant.NODE_ENV}`,
+  );
+  await app.listen(Constant.PORT, '0.0.0.0');
+  logger.log(`Application is running on port ${Constant.PORT}`);
 }
 bootstrap();

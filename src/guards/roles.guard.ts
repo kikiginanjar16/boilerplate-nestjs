@@ -1,9 +1,10 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 
 import Constant from 'src/common/constant';
+import { AuthenticatedUser } from 'src/common/types/auth-context.type';
+import { AppRequest, getHeader } from 'src/libraries/common/http.interface';
 
 
 @Injectable()
@@ -19,16 +20,15 @@ export class RolesGuard implements CanActivate {
             return true; // No roles specified, allow access
         }
 
-        const request = context.switchToHttp().getRequest<Request>();
-        const token = this.extractTokenFromHeader(request);
-
-        if (!token) {
-            throw new UnauthorizedException('No token provided');
-        }
+        const request = context.switchToHttp().getRequest<AppRequest>();
+        const user = request.logged ?? this.resolveUserFromToken(request);
 
         try {
-            const verified = jwt.verify(token, Constant.JWT_SECRET);
-            if (!requiredRoles.includes(verified.role)) {
+            if (!user) {
+                throw new UnauthorizedException('No token provided');
+            }
+
+            if (!requiredRoles.includes(user.role)) {
                 throw new ForbiddenException('Insufficient role permissions');
             }
             
@@ -41,8 +41,17 @@ export class RolesGuard implements CanActivate {
         }
     }
 
-    private extractTokenFromHeader(request: Request): string | undefined {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    private extractTokenFromHeader(request: AppRequest): string | undefined {
+        const [type, token] = getHeader(request, 'authorization')?.split(' ') ?? [];
         return type === 'Bearer' ? token : undefined;
+    }
+
+    private resolveUserFromToken(request: AppRequest): AuthenticatedUser | undefined {
+        const token = this.extractTokenFromHeader(request);
+        if (!token) {
+            return undefined;
+        }
+
+        return jwt.verify(token, Constant.JWT_SECRET) as AuthenticatedUser;
     }
 }

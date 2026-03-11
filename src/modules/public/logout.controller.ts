@@ -2,6 +2,7 @@ import { Controller, Post, Req, Res } from '@nestjs/common';
 
 import MessageHandler from 'src/common/message';
 import logger from 'src/libraries/logger';
+import { getHeader } from 'src/libraries/common/http.interface';
 import { respond } from 'src/libraries/respond';
 
 import { AuthAuditUseCase } from './usecases/auth-audit.usecase';
@@ -17,7 +18,7 @@ export class LogoutController {
   @Post()
   async logout(@Res() res, @Req() req): Promise<any> {
     try {
-      const token = req.header('Authorization')?.split(' ')[1];
+      const token = getHeader(req, 'authorization')?.split(' ')[1];
       if (!token) {
         await this.authAuditUseCase.recordSafe({
           req,

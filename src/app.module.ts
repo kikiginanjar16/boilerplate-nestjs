@@ -1,15 +1,12 @@
 import {
-  MiddlewareConsumer,
   Module,
-  NestModule,
-  RequestMethod,
 } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import Constant from './common/constant';
 import { RevokedToken } from './entities/revoked-token.entity';
-import { JwtValidateMiddleware } from './middlewares/auth.middleware';
-import { RateLimitMiddleware } from './middlewares/rate-limit.middleware';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CategoryModule } from './modules/categories/category.module';
 import { MenuModule } from './modules/menus/menu.module';
 import { NotificationModule } from './modules/notifications/notification.module';
@@ -29,7 +26,7 @@ import { UsersModule } from './modules/users/users.module';
       password: Constant.DB_PASSWORD,
       database: Constant.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: Constant.DB_SYNCHRONIZE,
     }),
     TypeOrmModule.forFeature([RevokedToken]),
     UsersModule,
@@ -41,16 +38,11 @@ import { UsersModule } from './modules/users/users.module';
     RoleModule,
     ProfileModule,
   ],
-  providers: [JwtValidateMiddleware, RateLimitMiddleware],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
-
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RateLimitMiddleware).forRoutes(
-      { path: 'v1/login', method: RequestMethod.POST },
-      { path: 'v1/login/admin', method: RequestMethod.POST },
-      { path: 'v1/oauth/google', method: RequestMethod.POST },
-    );
-    consumer.apply(JwtValidateMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

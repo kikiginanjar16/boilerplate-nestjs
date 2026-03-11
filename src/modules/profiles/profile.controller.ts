@@ -1,17 +1,12 @@
 import {
   Body,
   Controller,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
-  ParseFilePipe,
   Post,
+  Req,
   Put,
   Res,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
@@ -34,7 +29,6 @@ export class ProfileController {
   async update(@Res() res, @Body() body: ProfileUserDto): Promise<any> {
     try {
       const logged = res.locals.logged;
-      console.log("logged", logged)
       const id = logged.id;
       const data = await this.profileUseCase.update(id, body);
       return respond(res, 200, true, MessageHandler.SUC002, data);
@@ -64,19 +58,28 @@ export class ProfileController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@Res() res,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 2 * 1000 * 1024 }),
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-        ],
-      }),
-    ) file: Express.Multer.File): Promise<void> {
+  async uploadAvatar(@Req() req, @Res() res): Promise<void> {
     try {
+      const upload = await req.file();
+      if (!upload) {
+        return respond(res, 400, false, 'File is required');
+      }
+
+      if (!['image/png', 'image/jpeg', 'image/jpg'].includes(upload.mimetype)) {
+        return respond(res, 400, false, 'Validation failed (expected type is .(png|jpeg|jpg))');
+      }
+
+      const buffer = await upload.toBuffer();
+      if (buffer.length > 2 * 1000 * 1024) {
+        return respond(res, 400, false, 'Validation failed (expected size is less than 2000000)');
+      }
+
       const id = res.locals.logged.id;
-      const data = await this.profileUseCase.uploadAvatar(id, file);
+      const data = await this.profileUseCase.uploadAvatar(id, {
+        originalname: upload.filename,
+        mimetype: upload.mimetype,
+        buffer,
+      });
       return respond(res, 200, true, MessageHandler.SUC002, data);
     } catch (error) {
       logger.error('[PROFILE] ERROR', error);

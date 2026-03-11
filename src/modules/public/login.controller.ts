@@ -4,10 +4,12 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { hashText } from 'pii-cyclops';
 
 import MessageHandler from 'src/common/message';
+import { RateLimitGuard } from 'src/guards/rate-limit.guard';
 import logger from 'src/libraries/logger';
 import { respond } from 'src/libraries/respond';
 
@@ -24,6 +26,7 @@ export class LoginController {
   ) {}
 
   @Post()
+  @UseGuards(RateLimitGuard)
   async login(@Res() res, @Req() req, @Body() body: LoginDto): Promise<any> {
       try {
         const data = await this.loginUseCase.doLogin(req, body);
@@ -51,6 +54,7 @@ export class LoginController {
   }
 
   @Post('/admin')
+  @UseGuards(RateLimitGuard)
   async loginAdmin(@Res() res, @Req() req, @Body() body: LoginDto): Promise<any> {
     try {
       const data = await this.loginUseCase.doLoginAdmin(req, body);

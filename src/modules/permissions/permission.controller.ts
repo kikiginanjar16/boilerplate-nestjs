@@ -1,8 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  InternalServerErrorException,
   Param,
   Post,
   Put,
@@ -13,12 +17,14 @@ import {
 import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 
 import { ADMIN, JWT_ACCESS_TOKEN } from 'src/common/constant/constant';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { LoggedDto } from 'src/common/dtos/logged.dto';
 import MessageHandler from 'src/common/message';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { PaginateDto } from 'src/libraries/common/search.dto';
 import logger from 'src/libraries/logger';
-import { respond } from 'src/libraries/respond';
+import { buildResponse, respond } from 'src/libraries/respond';
 
 import { PermissionDto } from './dto/form.dto';
 import { CreatePermissionUseCase } from './usecases/create-permission.usecase';
@@ -39,73 +45,65 @@ export class PermissionController {
   ) { }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async create(@Res() res, @Body() body: PermissionDto): Promise<any> {
+  async create(@CurrentUser() logged: LoggedDto, @Body() body: PermissionDto): Promise<any> {
     try {
-      const logged = res.locals.logged;
       const data : any = await this.createPermissionUseCase.execute(body, logged);
-      return respond(res, 201, true, MessageHandler.SUC001, data?.data, data?.meta);
+      return buildResponse(true, MessageHandler.SUC001, data?.data, data?.meta);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
   }
 
   @Put(":id")
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async update(@Res() res, @Param('id') id: string, @Body() body: PermissionDto): Promise<any> {
+  async update(
+    @CurrentUser() logged: LoggedDto,
+    @Param('id') id: string,
+    @Body() body: PermissionDto,
+  ): Promise<any> {
     try {
-      const logged = res.locals.logged;
       const data = await this.updatePermissionUseCase.execute(id, body, logged);
-      return respond(res, 200, true, MessageHandler.SUC002, data);
+      return buildResponse(true, MessageHandler.SUC002, data);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
   }
 
   @Get()
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async findAll(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
+  async findAll(
+    @CurrentUser() logged: LoggedDto,
+    @Query() query: PaginateDto,
+  ): Promise<any> {
     try {
       const { page, limit } = query;
-      const logged = res.locals.logged;
       const data: any = await this.getPermissionUseCase.paginate(page, limit, logged);
-      return respond(res, 200, true, MessageHandler.SUC000, data);
+      return buildResponse(true, MessageHandler.SUC000, data);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
   }
 
   @Get('uam-uar')
   @ApiProperty({ type: () => PaginateDto })
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async findUamUar(@Res() res, @Query() query: PaginateDto): Promise<any[]> {
+  async findUamUar(@Query() query: PaginateDto): Promise<any> {
     try {
       const { page, limit } = query;
       const data: any = await this.getUamUarUseCase.paginate(page, limit);
-      return respond(res, 200, true, MessageHandler.SUC000, data);
+      return buildResponse(true, MessageHandler.SUC000, data);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
   }
 
@@ -168,8 +166,13 @@ export class PermissionController {
       ];
       const csvContent = `${csvLines.join('\n')}\n`;
 
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename="uam-uar.csv"');
+      if (typeof res.header === 'function') {
+        res.header('Content-Type', 'text/csv');
+        res.header('Content-Disposition', 'attachment; filename="uam-uar.csv"');
+      } else {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="uam-uar.csv"');
+      }
       return res.status(200).send(csvContent);
     } catch (error) {
       logger.error('[Permission] ERROR', error);
@@ -181,36 +184,45 @@ export class PermissionController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async findOne(@Res() res, @Param('id') id: string): Promise<any> {
+  async findOne(
+    @CurrentUser() logged: LoggedDto,
+    @Param('id') id: string,
+  ): Promise<any> {
     try {
-      const logged = res.locals.logged;
       const data = await this.getPermissionUseCase.findOne(id, logged);
-      return respond(res, 200, true, MessageHandler.SUC000, data);
+      return buildResponse(true, MessageHandler.SUC000, data);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(ADMIN)
-  async remove(@Res() res, @Param('id') id: string): Promise<void> {
+  async remove(
+    @CurrentUser() logged: LoggedDto,
+    @Param('id') id: string,
+  ): Promise<any> {
     try {
-      const logged = res.locals.logged;
       const data = await this.deletePermissionUseCase.execute(id, logged);
-      return respond(res, 200, true, MessageHandler.SUC003, data);
+      return buildResponse(true, MessageHandler.SUC003, data);
     } catch (error) {
-      logger.error('[Permission] ERROR', error);
-      if (error.message) {
-        return respond(res, 400, false, error.message);
-      }
-      return respond(res, 500, false, MessageHandler.ERR000);
+      this.throwJsonError(error);
     }
+  }
+
+  private throwJsonError(error: unknown): never {
+    logger.error('[Permission] ERROR', error);
+    if (error instanceof Error && error.message) {
+      throw new BadRequestException(buildResponse(false, error.message));
+    }
+
+    throw new InternalServerErrorException(
+      buildResponse(false, MessageHandler.ERR000),
+    );
   }
 }
