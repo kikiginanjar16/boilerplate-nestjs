@@ -39,8 +39,10 @@ Fokus utama repo ini adalah CRUD backend dan auth flow untuk aplikasi internal/a
 - HTTP adapter yang dipakai adalah Fastify, bukan Express.
 - Global auth dipasang lewat `APP_GUARD` menggunakan [`src/guards/jwt-auth.guard.ts`](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/src/guards/jwt-auth.guard.ts).
 - Banyak controller masih memakai `@Res()` dan `res.locals.logged`. Saat mengubah controller, jangan memutus pola ini tanpa memastikan guard/auth context tetap kompatibel.
+- Beberapa controller yang lebih baru sudah memakai `@CurrentUser()` dan return object langsung. Boleh mengikuti pola itu jika memang modul terkait sudah konsisten, tapi jangan memaksa migrasi parsial yang membuat style dalam satu area jadi campur-aduk tanpa alasan jelas.
 - Role protection umumnya memakai `@UseGuards(RolesGuard)` dan `@Roles(...)`.
 - Response banyak endpoint dibungkus helper `respond(...)` dari `src/libraries/respond`.
+- Untuk endpoint non-export, status response sebaiknya dinyatakan eksplisit dengan `@HttpCode(HttpStatus...)` agar seragam dan mudah dibaca.
 
 ## Saat Mengubah Kode
 
@@ -49,6 +51,7 @@ Fokus utama repo ini adalah CRUD backend dan auth flow untuk aplikasi internal/a
 - Jika menyentuh entity, cek relasi TypeORM, DTO terkait, dan use case yang mengandalkannya.
 - Jika menyentuh konfigurasi, cek konstanta di `src/common/constant` dan bootstrap di `src/main.ts` serta `src/app.module.ts`.
 - Hati-hati dengan perubahan yang mengasumsikan Express API; Fastify punya perbedaan pada request/response lifecycle.
+- Saat merapikan controller, samakan decorator route dan `@HttpCode(...)` dulu sebelum mempertimbangkan refactor pola respons yang lebih besar.
 
 ## Testing dan Verifikasi
 
@@ -65,6 +68,7 @@ Jika perubahan hanya dokumentasi, cukup verifikasi isi file dan konsistensi refe
 - `synchronize: true` masih aktif di [`src/app.module.ts`](/Users/kiki/Documents/GITHUB/boilerplate-nestjs/src/app.module.ts). Jangan mengandalkan ini sebagai strategi migrasi production.
 - Default secret/config di repo ini masih longgar. Jangan menambah fallback sensitif baru tanpa alasan kuat.
 - README dan implementasi tidak selalu 100% sinkron. Saat ragu, percayai source code yang berjalan.
+- Jika memperbarui README atau dokumentasi agent, sinkronkan dengan implementasi controller yang nyata, bukan dengan target arsitektur ideal.
 - Beberapa area masih memakai `any`. Jangan memperluas pemakaian `any` bila tipe yang lebih jelas bisa ditulis dengan biaya rendah.
 
 ## Prioritas Kualitas
